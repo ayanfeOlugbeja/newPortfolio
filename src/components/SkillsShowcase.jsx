@@ -1,307 +1,299 @@
-import React, { useState, useEffect } from 'react'
-import { useLanguage } from '../context/LanguageContext'
-import { translations } from '../data/translations'
+import React, { useState, useEffect, useRef } from 'react'
 
 const SkillsShowcase = () => {
-  const { language } = useLanguage()
-  const t = translations[language]
-  const [activeIndex, setActiveIndex] = useState(0)
-  const scrollTimeoutRef = React.useRef(null)
-  const canScrollRef = React.useRef(true)
+  const [scrollProgress, setScrollProgress] = useState(0)
+  const sectionRef = useRef(null)
 
   const skills = [
     {
       index: 0,
-      label: t.skillsShowcase.design.label,
-      title: t.skillsShowcase.design.title,
-      description: t.skillsShowcase.design.description,
-      bgColor: '#C8E3F5',
-      accentColor: '#A3D5F0',
+      label: 'DESIGN & BRANDING',
+      title: 'Design & Branding',
+      description:
+        'Creating beautiful, user-centered designs that bring ideas to life with modern tools and creative thinking.',
+      bgColor: '#D4C5F9',
       icon: '🎨',
+      technologies: [
+        {
+          name: 'Figma',
+          icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg',
+        },
+        {
+          name: 'Illustrator',
+          icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/illustrator/illustrator-plain.svg',
+        },
+        {
+          name: 'Photoshop',
+          icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/photoshop/photoshop-plain.svg',
+        },
+        {
+          name: 'Canva',
+          icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/canva/canva-original.svg',
+        },
+      ],
     },
     {
       index: 1,
-      label: t.skillsShowcase.mobileDev.label,
-      title: t.skillsShowcase.mobileDev.title,
-      description: t.skillsShowcase.mobileDev.description,
-      bgColor: '#FFF4D6',
-      accentColor: '#FFE9A8',
+      label: 'MOBILE DEVELOPMENT',
+      title: 'Mobile Development',
+      description:
+        'Building responsive, cross-platform mobile applications with React Native and modern development tools.',
+      bgColor: '#FFE9A8',
       icon: '📱',
+      technologies: [
+        {
+          name: 'React',
+          icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
+        },
+        {
+          name: 'JavaScript',
+          icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg',
+        },
+        {
+          name: 'TypeScript',
+          icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg',
+        },
+      ],
     },
     {
       index: 2,
-      label: t.skillsShowcase.webDev.label,
-      title: t.skillsShowcase.webDev.title,
-      description: t.skillsShowcase.webDev.description,
-      bgColor: '#E8E0F5',
-      accentColor: '#D4C5E8',
+      label: 'WEB DEVELOPMENT',
+      title: 'Web Development',
+      description:
+        'Developing modern web applications with cutting-edge technologies including Web3 and blockchain integration.',
+      bgColor: '#A8D5F0',
       icon: '💻',
+      technologies: [
+        {
+          name: 'React',
+          icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
+        },
+        {
+          name: 'Node.js',
+          icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
+        },
+        {
+          name: 'TypeScript',
+          icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg',
+        },
+        {
+          name: 'Solidity',
+          icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/solidity/solidity-original.svg',
+        },
+      ],
     },
   ]
+  const BASE_WIDTH = 20 // always visible
+  const EXPANDABLE = 40 // shared pool
 
-  // Detect when section enters viewport and disable body scroll
+  // Calculate card widths based on scroll progress (0-100)
+  const getCardWidth = (index) => {
+    const progress = scrollProgress / 100
+    const activeIndex = progress * (skills.length - 1)
+
+    const distance = Math.abs(activeIndex - index)
+
+    // cards farther than 1 step get no extra
+    if (distance >= 1) return BASE_WIDTH
+
+    // interpolate extra width smoothly
+    const extra = EXPANDABLE * (1 - distance)
+
+    return BASE_WIDTH + extra
+  }
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          document.body.style.overflow = 'hidden'
-        } else {
-          document.body.style.overflow = 'auto'
-        }
-      },
-      { threshold: 0.3 }
-    )
+    const handleScroll = () => {
+      if (!sectionRef.current) return
 
-    const section = document.getElementById('skills-showcase-container')
-    if (section) observer.observe(section)
+      const section = sectionRef.current
+      const rect = section.getBoundingClientRect()
+      const windowHeight = window.innerHeight
 
-    return () => {
-      if (section) observer.unobserve(section)
-      document.body.style.overflow = 'auto'
+      if (rect.top <= 0 && rect.bottom >= windowHeight) {
+        const sectionHeight = section.offsetHeight
+        const scrolled = -rect.top
+        const scrollableHeight = sectionHeight - windowHeight
+
+        const progress = Math.min(
+          Math.max((scrolled / scrollableHeight) * 100, 0),
+          100
+        )
+        setScrollProgress(progress)
+      } else if (rect.top > 0) {
+        setScrollProgress(0)
+      } else if (rect.bottom < windowHeight) {
+        setScrollProgress(100)
+      }
     }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll()
+
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Handle mouse wheel scrolling within the section
-  useEffect(() => {
-    const handleWheel = (e) => {
-      const section = document.getElementById('skills-showcase-container')
-      if (!section) return
-
-      const stickyDiv = section.querySelector('.sticky')
-      const stickyRect = stickyDiv?.getBoundingClientRect()
-
-      // Only intercept if the sticky div is in view
-      if (
-        !stickyRect ||
-        stickyRect.top > window.innerHeight ||
-        stickyRect.bottom < 0
-      )
-        return
-
-      // Only prevent default and handle if we're not at the edges
-      if (
-        (activeIndex === 0 && e.deltaY < 0) ||
-        (activeIndex === skills.length - 1 && e.deltaY > 0)
-      ) {
-        return
-      }
-
-      if (!canScrollRef.current) return
-
-      e.preventDefault()
-      canScrollRef.current = false
-
-      const scrollDirection = e.deltaY > 0 ? 1 : -1
-      setActiveIndex((prevIndex) => {
-        let newIndex = prevIndex + scrollDirection
-        newIndex = Math.max(0, Math.min(newIndex, skills.length - 1))
-        return newIndex
-      })
-
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current)
-      scrollTimeoutRef.current = setTimeout(() => {
-        canScrollRef.current = true
-      }, 800) // Slightly longer than animation duration
-    }
-
-    window.addEventListener('wheel', handleWheel, { passive: false })
-    return () => {
-      window.removeEventListener('wheel', handleWheel)
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [skills.length])
-
   return (
-    <>
-      {/* Main showcase section with fixed viewport panels */}
-      <div
-        id="skills-showcase-container"
-        className="relative w-full"
-        style={{ height: '400vh' }} // 4x viewport height for 3 panels + transitions
-      >
-        <div className="sticky top-0 w-full h-screen overflow-hidden">
-          {/* Animated panel transitions */}
-          <div className="relative w-full h-full">
-            {skills.map((s, idx) => (
+    <div
+      ref={sectionRef}
+      className="relative w-full bg-white"
+      style={{ height: '300vh' }}
+    >
+      <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
+        <div className="flex gap-0 w-full h-full max-w-7xl mx-auto">
+          {skills.map((skill, index) => {
+            const width = getCardWidth(index)
+            const isExpanded = width > 40
+
+            return (
               <div
-                key={idx}
-                className="absolute inset-0 transition-all duration-700 ease-out"
+                className="relative overflow-hidden transition-all duration-700 ease-out rounded-3xl border-4 border-black mx-2"
                 style={{
-                  backgroundColor: s.bgColor,
-                  opacity: activeIndex === idx ? 1 : 0,
-                  transform:
-                    activeIndex > idx
-                      ? 'translateX(-100%)'
-                      : activeIndex < idx
-                      ? 'translateX(100%)'
-                      : 'translateX(0)',
-                  zIndex: activeIndex === idx ? 10 : 0,
+                  width: `${width}%`,
+                  backgroundColor: skill.bgColor,
                 }}
               >
-                {/* Content wrapper */}
-                <div className="flex h-full w-full items-center justify-between relative">
-                  {/* Left side - Vertical label and divider */}
-                  <div className="flex items-center gap-0 relative">
-                    {/* Vertical rotated label */}
-                    <div
-                      className="pl-6 flex items-center justify-center"
-                      style={{ minWidth: '120px' }}
-                    >
-                      <div
-                        className="text-black font-bold text-2xl tracking-widest"
-                        style={{
-                          writingMode: 'vertical-rl',
-                          textOrientation: 'mixed',
-                          transform: 'rotate(180deg)',
-                          whiteSpace: 'nowrap',
-                          letterSpacing: '2px',
-                          opacity: activeIndex === idx ? 1 : 0.3,
-                          transition: 'opacity 0.7s ease-out',
-                        }}
-                      >
-                        {s.label}
-                      </div>
-                    </div>
+                {/* Floating Technology Logos Background - only when expanded */}
+                {isExpanded && (
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    {skill.technologies.map((tech, techIdx) => (
+                      <React.Fragment key={techIdx}>
+                        <img
+                          src={tech.icon}
+                          alt={tech.name}
+                          className="absolute opacity-10"
+                          style={{
+                            width: `${100 + techIdx * 30}px`,
+                            height: `${100 + techIdx * 30}px`,
+                            top: `${15 + techIdx * 20}%`,
+                            left: `${10 + techIdx * 20}%`,
+                            transform: `rotate(${techIdx * 15}deg)`,
+                            animation: `float ${
+                              5 + techIdx
+                            }s ease-in-out infinite`,
+                            animationDelay: `${techIdx * 0.5}s`,
+                          }}
+                        />
+                        <img
+                          src={tech.icon}
+                          alt={tech.name}
+                          className="absolute opacity-10"
+                          style={{
+                            width: `${80 + techIdx * 25}px`,
+                            height: `${80 + techIdx * 25}px`,
+                            top: `${20 + techIdx * 18}%`,
+                            right: `${5 + techIdx * 15}%`,
+                            transform: `rotate(${-techIdx * 20}deg)`,
+                            animation: `float ${
+                              6 + techIdx
+                            }s ease-in-out infinite`,
+                            animationDelay: `${techIdx * 0.7}s`,
+                          }}
+                        />
+                      </React.Fragment>
+                    ))}
+                  </div>
+                )}
 
-                    {/* Vertical double-line divider */}
-                    <div
-                      className="h-1/3 mx-8"
-                      style={{
-                        width: '2px',
-                        background: 'black',
-                        opacity: 0.3,
-                        boxShadow: '4px 0 0 black',
-                      }}
-                    />
+                {/* Card Content */}
+                <div
+                  className="relative z-10 h-full flex items-center justify-center transition-all duration-700"
+                  style={{
+                    flexDirection: isExpanded ? 'column' : 'row',
+                    gap: isExpanded ? '1rem' : '1.5rem',
+                  }}
+                >
+                  {/* Icon at top - always visible */}
+                  <div
+                    className="transition-all duration-700"
+                    style={{
+                      marginBottom: isExpanded ? '1rem' : '0',
+                      fontSize: isExpanded ? '4rem' : '4rem',
+                      opacity: 1,
+                    }}
+                  >
+                    {skill.icon}
                   </div>
 
-                  {/* Center - Main content */}
-                  <div className="flex-1 flex flex-col items-center justify-center gap-8 text-center px-12">
-                    {/* Icon */}
-                    <div
-                      className="text-9xl select-none"
-                      style={{
-                        opacity: activeIndex === idx ? 1 : 0,
-                        transform:
-                          activeIndex === idx ? 'scale(1)' : 'scale(0.5)',
-                        transition: 'all 0.7s ease-out 0.1s',
-                      }}
-                    >
-                      {s.icon}
-                    </div>
+                  {/* Title - always visible */}
+                  <h2
+                    className="font-extrabold text-black transition-all duration-700"
+                    style={{
+                      fontSize: isExpanded
+                        ? 'clamp(36px, 4vw, 64px)'
+                        : 'clamp(18px, 2.2vw, 26px)',
+                      writingMode: isExpanded ? 'horizontal-tb' : 'vertical-rl',
+                      textOrientation: 'mixed',
+                      whiteSpace: 'nowrap',
+                      textAlign: 'center',
+                    }}
+                  >
+                    {skill.title}
+                  </h2>
 
-                    {/* Title */}
-                    <h2
-                      className="font-bold text-black leading-tight"
-                      style={{
-                        fontSize: 'clamp(48px, 8vw, 90px)',
-                        opacity: activeIndex === idx ? 1 : 0,
-                        transform:
-                          activeIndex === idx
-                            ? 'translateY(0)'
-                            : 'translateY(20px)',
-                        transition: 'all 0.7s ease-out 0.2s',
-                      }}
-                    >
-                      {s.title}
-                    </h2>
-
-                    {/* Description */}
+                  {/* Description - only when expanded */}
+                  {isExpanded && (
                     <p
-                      className="text-gray-800 leading-relaxed max-w-2xl"
+                      className="text-gray-800 leading-relaxed max-w-2xl mt-6 text-center transition-all duration-700"
                       style={{
                         fontSize: 'clamp(16px, 2vw, 20px)',
-                        opacity: activeIndex === idx ? 1 : 0,
-                        transform:
-                          activeIndex === idx
-                            ? 'translateY(0)'
-                            : 'translateY(20px)',
-                        transition: 'all 0.7s ease-out 0.3s',
+                        opacity: isExpanded ? 1 : 0,
                       }}
                     >
-                      {s.description}
+                      {skill.description}
                     </p>
-                  </div>
+                  )}
 
-                  {/* Right side - Vertical divider */}
-                  <div className="pr-8 flex items-center gap-8">
+                  {/* Technology Pills - only when expanded */}
+                  {isExpanded && (
                     <div
-                      className="h-1/3"
+                      className="flex flex-wrap gap-3 justify-center mt-8 transition-all duration-700"
                       style={{
-                        width: '2px',
-                        background: 'black',
-                        opacity: 0.3,
-                        boxShadow: '4px 0 0 black',
+                        opacity: isExpanded ? 1 : 0,
                       }}
-                    />
-                  </div>
+                    >
+                      {skill.technologies.map((tech, techIdx) => (
+                        <div
+                          key={techIdx}
+                          className="flex items-center gap-2 px-4 py-2 bg-white bg-opacity-60 backdrop-blur-sm rounded-full shadow-sm border border-black border-opacity-10"
+                        >
+                          <img
+                            src={tech.icon}
+                            alt={tech.name}
+                            className="w-6 h-6"
+                          />
+                          <span className="text-sm font-medium text-gray-800">
+                            {tech.name}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
-            ))}
-          </div>
-
-          {/* Bottom indicator dots */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex gap-3">
-            {skills.map((_, idx) => (
-              <div
-                key={idx}
-                className="rounded-full transition-all duration-300"
-                style={{
-                  width: activeIndex === idx ? '40px' : '12px',
-                  height: '12px',
-                  backgroundColor:
-                    activeIndex === idx ? 'black' : 'rgba(0,0,0,0.4)',
-                }}
-              />
-            ))}
-          </div>
-
-          {/* Scroll hint - shows on first panel */}
-          {activeIndex === 0 && (
-            <div
-              className="absolute right-12 top-1/2 transform -translate-y-1/2 z-20 text-black font-semibold flex items-center gap-2"
-              style={{
-                animation: 'pulse 2s infinite',
-                fontSize: '14px',
-              }}
-            >
-              <span>Scroll to explore</span>
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M10 4v8M10 16v-3M10 4l3 3M10 4l-3 3" />
-              </svg>
-            </div>
-          )}
-
-          {/* Progress bar at bottom */}
-          <div
-            className="absolute bottom-0 left-0 right-0 h-1 bg-black opacity-20"
-            style={{
-              width: '100%',
-              background: `linear-gradient(to right, black ${
-                (activeIndex / (skills.length - 1)) * 100
-              }%, rgba(0,0,0,0.1) ${
-                (activeIndex / (skills.length - 1)) * 100
-              }%)`,
-            }}
-          />
+            )
+          })}
         </div>
       </div>
 
+      {/* Progress bar at bottom */}
+      <div
+        className="fixed bottom-0 left-0 right-0 h-1 z-20"
+        style={{
+          background: `linear-gradient(to right, black ${scrollProgress}%, rgba(0,0,0,0.1) ${scrollProgress}%)`,
+        }}
+      />
+
       <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0) rotate(var(--rotate, 0deg));
+          }
+          50% {
+            transform: translateY(-20px) rotate(var(--rotate, 0deg));
+          }
         }
       `}</style>
-    </>
+    </div>
   )
 }
 

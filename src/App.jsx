@@ -5,11 +5,12 @@ import Topbar from './components/Topbar'
 import HeroSection from './components/HeroSection'
 import About from './components/About'
 import SkillsShowcase from './components/SkillsShowcase'
-import Skills from './components/Skills'
+
 import Projects from './components/Projects'
 import TechnicalWriteups from './components/TechnicalWriteups'
 import ContactForm from './components/ContactForm'
 import Footer from './components/Footer'
+import ExperienceMarquee from './components/Experience'
 
 function App() {
   return (
@@ -25,7 +26,7 @@ function App() {
         <main role="main" className="w-full">
           <About />
           <SkillsShowcase />
-          <Skills />
+          <ExperienceMarquee />
           <Projects />
 
           <TechnicalWriteups />

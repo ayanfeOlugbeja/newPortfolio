@@ -7,7 +7,7 @@ export default function HeroSection() {
       style={{ maxWidth: '100%', height: '100vh' }}
       aria-label="Hero introduction"
     >
-      <div className="max-w-2xl mx-auto text-center">
+      {/* <div className="max-w-2xl mx-auto text-center">
         <h1 className="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
           Hi, I'm Your Name
         </h1>
@@ -31,7 +31,7 @@ export default function HeroSection() {
             Get in Touch
           </a>
         </div>
-      </div>
+      </div> */}
     </section>
   )
 }

@@ -1,19 +1,24 @@
-import React, { useState } from 'react'
-import { useLanguage } from '../context/LanguageContext'
-import { translations } from '../data/translations'
+import React, { useState, useRef, useEffect } from 'react'
 
 export default function ContactForm() {
-  const { language } = useLanguage()
-  const t = translations[language]
   const cellInput =
     'w-full bg-transparent text-lg outline-none placeholder-gray-400'
+
+  const subjects = [
+    { value: 'project', label: 'New Project' },
+    { value: 'collaboration', label: 'Collaboration' },
+    { value: 'inquiry', label: 'General Inquiry' },
+  ]
+
+  const [selectedSubjects, setSelectedSubjects] = useState([])
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const dropdownRef = useRef(null)
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     jobTitle: '',
     company: '',
-    subject: '',
     message: '',
   })
 
@@ -22,6 +27,23 @@ export default function ContactForm() {
     error: null,
     success: false,
   })
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const toggleSubject = (value) => {
+    setSelectedSubjects((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    )
+  }
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -36,10 +58,7 @@ export default function ContactForm() {
     }))
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-
-    // Validation
+  const handleSubmit = async () => {
     if (!formData.name.trim()) {
       setStatus({ loading: false, error: 'Name is required', success: false })
       return
@@ -59,6 +78,15 @@ export default function ContactForm() {
       return
     }
 
+    if (selectedSubjects.length === 0) {
+      setStatus({
+        loading: false,
+        error: 'Please select at least one subject',
+        success: false,
+      })
+      return
+    }
+
     if (!formData.message.trim()) {
       setStatus({
         loading: false,
@@ -71,7 +99,6 @@ export default function ContactForm() {
     setStatus({ loading: true, error: null, success: false })
 
     try {
-      // Using Formspree for form submission
       const response = await fetch('https://formspree.io/f/myzrdprd', {
         method: 'POST',
         headers: {
@@ -82,7 +109,9 @@ export default function ContactForm() {
           email: formData.email,
           jobTitle: formData.jobTitle,
           company: formData.company,
-          subject: formData.subject,
+          subjects: selectedSubjects
+            .map((val) => subjects.find((s) => s.value === val)?.label)
+            .join(', '),
           message: formData.message,
         }),
       })
@@ -94,11 +123,10 @@ export default function ContactForm() {
           email: '',
           jobTitle: '',
           company: '',
-          subject: '',
           message: '',
         })
+        setSelectedSubjects([])
 
-        // Reset success message after 5 seconds
         setTimeout(() => {
           setStatus({ loading: false, error: null, success: false })
         }, 5000)
@@ -109,33 +137,25 @@ export default function ContactForm() {
           success: false,
         })
       }
-    } catch (error) {
+    } catch {
       setStatus({
         loading: false,
-        error: `An ${error} occurred. Please try again.`,
+        error: `An error occurred. Please try again.`,
         success: false,
       })
     }
   }
 
   return (
-    <section
-      id="contact"
-      className="w-full py-0"
-      aria-labelledby="contact-heading"
-    >
-      {/* Header Section with Gradient */}
-      <div className="bg-gradient-to-r from-orange-400 via-orange-500 to-red-500 px-4 md:px-8 lg:px-16 pt-20 pb-12 relative">
+    <section id="contact" className="w-full py-0">
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-orange-400 via-orange-500 to-red-500 px-4 md:px-8 lg:px-16 pt-20 pb-12">
         <div className="max-w-6xl mx-auto">
-          <h2
-            id="contact-heading"
-            className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 italic tracking-tight"
-          >
-            {t.contact?.title || "LET'S WORK TOGETHER"}
+          <h2 className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 italic tracking-tight">
+            LET'S WORK TOGETHER
           </h2>
           <p className="text-lg md:text-xl text-white max-w-2xl">
-            {t.contact?.message ||
-              "Have a project in mind? Let's create something amazing together."}
+            Have a project in mind? Let's create something amazing together.
           </p>
         </div>
       </div>
@@ -143,34 +163,23 @@ export default function ContactForm() {
       {/* Form Section */}
       <div className="w-full bg-white px-4 md:px-8 lg:px-16 pb-20">
         <div className="max-w-6xl mx-auto">
-          <div className=" overflow-hidden p-4" style={{ marginTop: '-2rem' }}>
-            <form
-              onSubmit={handleSubmit}
-              className="bg-white border-2 border-black mt-10"
-              aria-label="Contact form"
-            >
-              {/* 2x2 Grid */}
+          <div className="overflow-hidden p-4" style={{ marginTop: '-2rem' }}>
+            <div className="bg-white border-2 border-black mt-10">
+              {/* Name & Email Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 divide-y-2 md:divide-y-0 md:divide-x-2 divide-black">
-                {/* Name */}
                 <div className="p-6 border-b-2 md:border-b-0 border-black">
-                  <label className="block font-bold mb-2">
-                    {t.contact?.formName || 'Your name'} *
-                  </label>
+                  <label className="block font-bold mb-2">Your name *</label>
                   <input
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
                     className={cellInput}
                     placeholder="Olivia George"
-                    required
                   />
                 </div>
 
-                {/* Email */}
                 <div className="p-6">
-                  <label className="block font-bold mb-2">
-                    {t.contact?.formEmail || 'Your email'} *
-                  </label>
+                  <label className="block font-bold mb-2">Your email *</label>
                   <input
                     name="email"
                     type="email"
@@ -178,18 +187,14 @@ export default function ContactForm() {
                     onChange={handleInputChange}
                     className={cellInput}
                     placeholder="olivia@company.com"
-                    required
                   />
                 </div>
               </div>
 
-              {/* Second row */}
+              {/* Job Title & Company Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 divide-x-2 divide-black border-t-2 border-black">
-                {/* Job Title */}
                 <div className="p-6 border-b-2 md:border-b-0 border-black">
-                  <label className="block font-bold mb-2">
-                    {t.contact?.formJobTitle || 'Your job title'}
-                  </label>
+                  <label className="block font-bold mb-2">Your job title</label>
                   <input
                     name="jobTitle"
                     value={formData.jobTitle}
@@ -199,11 +204,8 @@ export default function ContactForm() {
                   />
                 </div>
 
-                {/* Company */}
                 <div className="p-6">
-                  <label className="block font-bold mb-2">
-                    {t.contact?.formCompany || 'Your company'}
-                  </label>
+                  <label className="block font-bold mb-2">Your company</label>
                   <input
                     name="company"
                     value={formData.company}
@@ -214,92 +216,128 @@ export default function ContactForm() {
                 </div>
               </div>
 
-              {/* Subject */}
+              {/* Subject with Checkboxes */}
               <div className="p-6 border-t-2 border-black">
-                <label className="block font-bold mb-2">
-                  {t.contact?.formSubject || 'Subject'} *
-                </label>
-                <select
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleInputChange}
-                  className={cellInput}
-                  required
-                >
-                  <option value="">Select a topic</option>
-                  <option value="project">New Project</option>
-                  <option value="collaboration">Collaboration</option>
-                  <option value="inquiry">General Inquiry</option>
-                </select>
+                <label className="block font-bold mb-2">Subject *</label>
+
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="w-full  px-4 py-3 flex items-center justify-between bg-white rounded-none"
+                  >
+                    <span className="text-left">Select subjects...</span>
+                    <svg
+                      className={`w-4 h-4 transition-transform ${
+                        isDropdownOpen ? 'rotate-180' : ''
+                      }`}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                    >
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </button>
+
+                  {isDropdownOpen && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border-2 border-black ">
+                      {subjects.map((subject) => (
+                        <div
+                          key={subject.value}
+                          onClick={() => toggleSubject(subject.value)}
+                          className="flex items-center gap-3 px-4 py-3  cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedSubjects.includes(subject.value)}
+                            onChange={() => {}}
+                            className="w-5 h-5 border-2 border-black cursor-pointer"
+                          />
+                          <span className="text-sm">{subject.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Selected Tags */}
+                {selectedSubjects.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {selectedSubjects.map((value) => {
+                      const label = subjects.find(
+                        (s) => s.value === value
+                      )?.label
+                      return (
+                        <span
+                          key={value}
+                          className="flex items-center gap-2 px-3 py-1 border border-black text-sm bg-gray-50"
+                        >
+                          {label}
+                          <button
+                            type="button"
+                            onClick={() => toggleSubject(value)}
+                            className="font-bold leading-none hover:text-red-500"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      )
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* Message */}
               <div className="p-6 border-t-2 border-black">
-                <label className="block font-bold mb-2">
-                  {t.contact?.formMessage || 'Your message'} *
-                </label>
+                <label className="block font-bold mb-2">Your message *</label>
                 <textarea
                   name="message"
                   value={formData.message}
                   onChange={handleInputChange}
                   rows={5}
                   className={`${cellInput} resize-none`}
-                  placeholder="Tell us about your project..."
-                  required
+                  placeholder=""
                 />
               </div>
 
-              {/* Footer Action */}
+              {/* Status Messages */}
+              {status.error && (
+                <div className="px-6 py-3 bg-red-50 border-t-2 border-black text-red-600">
+                  {status.error}
+                </div>
+              )}
+              {status.success && (
+                <div className="px-6 py-3 bg-green-50 border-t-2 border-black text-green-600">
+                  Message sent successfully!
+                </div>
+              )}
+
+              {/* Submit Button */}
               <button
-                type="submit"
+                type="button"
+                onClick={handleSubmit}
                 disabled={status.loading}
-                className="
-    w-full
-    flex items-center justify-between
-    p-6
-    border-t-2 border-black
-    text-left
-    hover:bg-gray-50
-    transition
-    disabled:opacity-50
-    disabled:cursor-not-allowed
-    group
-    rounded-none
-  "
+                className="w-full flex items-center justify-between p-6 border-t-2 border-black text-left hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed group rounded-none"
               >
-                {/* Left text */}
                 <span className="font-bold text-lg underline group-hover:text-orange-500 transition">
                   {status.loading ? 'Sending…' : 'Submit Message'}
                 </span>
 
-                {/* Right arrow */}
-                <span
-                  className="
-      w-12 h-12
-      border-2 border-black
-      rounded-full
-      flex items-center justify-center
-      group-hover:bg-black
-      group-hover:text-white
-      transition
-    "
-                  aria-hidden="true"
-                >
+                <span className="w-12 h-12 border-2 border-black rounded-full flex items-center justify-center group-hover:bg-black group-hover:text-white transition">
                   <svg
-                    className="w-5 h-5 group-hover:text-white"
+                    className="w-5 h-5"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
                   >
                     <path d="M5 12h14" />
                     <path d="M13 5l7 7-7 7" />
                   </svg>
                 </span>
               </button>
-            </form>
+            </div>
           </div>
         </div>
       </div>
