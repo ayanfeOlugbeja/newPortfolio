@@ -8,7 +8,7 @@ const items = [
   {
     id: 1,
     category: 'work',
-    name: 'Sidmach Technologies',
+    name: 'Sidmach',
     logo: 'https://www.sidmach.com/assets/images/sidmach-logo.png',
     duration: 'Feb 2025 – Present',
     title: 'Software Engineer',
@@ -213,12 +213,9 @@ function MarqueeCard({ item, onHover }) {
       className={`
         h-28 w-48 flex items-center justify-center rounded-xl cursor-pointer
         transition-transform duration-300 hover:scale-105
-        ${item.category === 'work' && 'bg-neutral-900 text-white'}
-        ${item.category === 'education' && 'bg-neutral-100'}
-        ${
-          item.category === 'certification' &&
-          'bg-white ring-1 ring-neutral-200'
-        }
+        ${item.category === 'work' && 'bg-purple-200 '}
+        ${item.category === 'education' && 'bg-orange-100'}
+        ${item.category === 'certification' && 'bg-blue-100'}
       `}
     >
       {item.logo && !imgError ? (

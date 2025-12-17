@@ -1,8 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
 
 const SkillsShowcase = () => {
-  const [scrollProgress, setScrollProgress] = useState(0)
   const sectionRef = useRef(null)
+
+  // Track scroll progress within the section
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end end'],
+  })
+
+  // Smooth spring physics for natural motion
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  })
 
   const skills = [
     {
@@ -83,54 +96,52 @@ const SkillsShowcase = () => {
       ],
     },
   ]
-  const BASE_WIDTH = 20 // always visible
-  const EXPANDABLE = 40 // shared pool
 
-  // Calculate card widths based on scroll progress (0-100)
-  const getCardWidth = (index) => {
-    const progress = scrollProgress / 100
-    const activeIndex = progress * (skills.length - 1)
+  const BASE_WIDTH = 20
+  const EXPANDABLE = 40
 
-    const distance = Math.abs(activeIndex - index)
+  // Create width transforms for each card at the top level
+  const cardWidths = skills.map((_, index) =>
+    useTransform(smoothProgress, (progress) => {
+      const activeIndex = progress * (skills.length - 1)
+      const distance = Math.abs(activeIndex - index)
 
-    // cards farther than 1 step get no extra
-    if (distance >= 1) return BASE_WIDTH
+      if (distance >= 1) return BASE_WIDTH
 
-    // interpolate extra width smoothly
-    const extra = EXPANDABLE * (1 - distance)
+      const extra = EXPANDABLE * (1 - distance)
+      return BASE_WIDTH + extra
+    })
+  )
 
-    return BASE_WIDTH + extra
-  }
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!sectionRef.current) return
+  // Create opacity transforms for content
+  const contentOpacities = cardWidths.map((width) =>
+    useTransform(width, [20, 40, 60], [0, 0, 1])
+  )
 
-      const section = sectionRef.current
-      const rect = section.getBoundingClientRect()
-      const windowHeight = window.innerHeight
-
-      if (rect.top <= 0 && rect.bottom >= windowHeight) {
-        const sectionHeight = section.offsetHeight
-        const scrolled = -rect.top
-        const scrollableHeight = sectionHeight - windowHeight
-
-        const progress = Math.min(
-          Math.max((scrolled / scrollableHeight) * 100, 0),
-          100
-        )
-        setScrollProgress(progress)
-      } else if (rect.top > 0) {
-        setScrollProgress(0)
-      } else if (rect.bottom < windowHeight) {
-        setScrollProgress(100)
-      }
-    }
-
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    handleScroll()
-
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  // Create all other transforms at the top level for each card
+  const cardTransforms = cardWidths.map((width, index) => ({
+    widthPercent: useTransform(width, (w) => `${w}%`),
+    flexDirection: useTransform(width, (w) => (w > 40 ? 'column' : 'row')),
+    fontSize: useTransform(
+      width,
+      [20, 40, 60],
+      [
+        'clamp(18px, 2.2vw, 26px)',
+        'clamp(28px, 3vw, 40px)',
+        'clamp(36px, 4vw, 64px)',
+      ]
+    ),
+    writingMode: useTransform(width, (w) =>
+      w > 40 ? 'horizontal-tb' : 'vertical-rl'
+    ),
+    titleMarginTop: useTransform(width, (w) => (w > 40 ? '1rem' : '0')),
+    descMarginTop: useTransform(contentOpacities[index], (o) =>
+      o > 0 ? '1.5rem' : '0'
+    ),
+    techMarginTop: useTransform(contentOpacities[index], (o) =>
+      o > 0 ? '2rem' : '0'
+    ),
+  }))
 
   return (
     <div
@@ -141,158 +152,208 @@ const SkillsShowcase = () => {
       <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
         <div className="flex gap-0 w-full h-full max-w-7xl mx-auto">
           {skills.map((skill, index) => {
-            const width = getCardWidth(index)
-            const isExpanded = width > 40
+            const width = cardWidths[index]
+            const contentOpacity = contentOpacities[index]
+            const transforms = cardTransforms[index]
+
+            const COLLAPSED_MAX = 32 // % width
+            const isCollapsed = useTransform(width, (w) => w <= COLLAPSED_MAX)
 
             return (
-              <div
-                className="relative overflow-hidden transition-all duration-700 ease-out rounded-3xl border-4 border-black mx-2"
+              <motion.div
+                key={index}
+                className="relative overflow-hidden rounded-3xl border-4 border-black mx-2"
                 style={{
-                  width: `${width}%`,
+                  width: transforms.widthPercent,
                   backgroundColor: skill.bgColor,
                 }}
               >
-                {/* Floating Technology Logos Background - only when expanded */}
-                {isExpanded && (
-                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    {skill.technologies.map((tech, techIdx) => (
-                      <React.Fragment key={techIdx}>
-                        <img
-                          src={tech.icon}
-                          alt={tech.name}
-                          className="absolute opacity-10"
-                          style={{
-                            width: `${100 + techIdx * 30}px`,
-                            height: `${100 + techIdx * 30}px`,
-                            top: `${15 + techIdx * 20}%`,
-                            left: `${10 + techIdx * 20}%`,
-                            transform: `rotate(${techIdx * 15}deg)`,
-                            animation: `float ${
-                              5 + techIdx
-                            }s ease-in-out infinite`,
-                            animationDelay: `${techIdx * 0.5}s`,
-                          }}
-                        />
-                        <img
-                          src={tech.icon}
-                          alt={tech.name}
-                          className="absolute opacity-10"
-                          style={{
-                            width: `${80 + techIdx * 25}px`,
-                            height: `${80 + techIdx * 25}px`,
-                            top: `${20 + techIdx * 18}%`,
-                            right: `${5 + techIdx * 15}%`,
-                            transform: `rotate(${-techIdx * 20}deg)`,
-                            animation: `float ${
-                              6 + techIdx
-                            }s ease-in-out infinite`,
-                            animationDelay: `${techIdx * 0.7}s`,
-                          }}
-                        />
-                      </React.Fragment>
-                    ))}
-                  </div>
-                )}
+                {/* Floating Technology Logos Background */}
+                <motion.div
+                  className="absolute inset-0 overflow-hidden pointer-events-none"
+                  style={{ opacity: contentOpacity }}
+                >
+                  {skill.technologies.map((tech, techIdx) => (
+                    <React.Fragment key={techIdx}>
+                      <motion.img
+                        src={tech.icon}
+                        alt={tech.name}
+                        className="absolute"
+                        style={{
+                          width: `${100 + techIdx * 30}px`,
+                          height: `${100 + techIdx * 30}px`,
+                          top: `${15 + techIdx * 20}%`,
+                          left: `${10 + techIdx * 20}%`,
+                          opacity: 0.1,
+                        }}
+                        animate={{
+                          y: [-10, 10, -10],
+                          rotate: techIdx * 15,
+                        }}
+                        transition={{
+                          y: {
+                            duration: 5 + techIdx,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                          },
+                          rotate: {
+                            duration: 0,
+                          },
+                        }}
+                      />
+                      <motion.img
+                        src={tech.icon}
+                        alt={tech.name}
+                        className="absolute"
+                        style={{
+                          width: `${80 + techIdx * 25}px`,
+                          height: `${80 + techIdx * 25}px`,
+                          top: `${20 + techIdx * 18}%`,
+                          right: `${5 + techIdx * 15}%`,
+                          opacity: 0.1,
+                        }}
+                        animate={{
+                          y: [-10, 10, -10],
+                          rotate: -techIdx * 20,
+                        }}
+                        transition={{
+                          y: {
+                            duration: 6 + techIdx,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                            delay: techIdx * 0.7,
+                          },
+                          rotate: {
+                            duration: 0,
+                          },
+                        }}
+                      />
+                    </React.Fragment>
+                  ))}
+                </motion.div>
 
                 {/* Card Content */}
-                <div
-                  className="relative z-10 h-full flex items-center justify-center transition-all duration-700"
+                <motion.div
+                  className="relative z-10 h-full flex items-center justify-center px-6"
                   style={{
-                    flexDirection: isExpanded ? 'column' : 'row',
-                    gap: isExpanded ? '1rem' : '1.5rem',
+                    flexDirection: useTransform(isCollapsed, (c) =>
+                      c ? 'column' : 'column'
+                    ),
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   }}
                 >
-                  {/* Icon at top - always visible */}
-                  <div
-                    className="transition-all duration-700"
+                  {/* Icon */}
+                  <motion.div
                     style={{
-                      marginBottom: isExpanded ? '1rem' : '0',
-                      fontSize: isExpanded ? '4rem' : '4rem',
-                      opacity: 1,
+                      fontSize: useTransform(
+                        width,
+                        [20, 60],
+                        ['3.5rem', '4rem']
+                      ),
+                      marginBottom: useTransform(isCollapsed, (c) =>
+                        c ? '1rem' : '0'
+                      ),
+                      marginTop: useTransform(isCollapsed, (c) =>
+                        c ? '15rem' : '0'
+                      ),
                     }}
                   >
                     {skill.icon}
-                  </div>
+                  </motion.div>
 
-                  {/* Title - always visible */}
-                  <h2
-                    className="font-extrabold text-black transition-all duration-700"
+                  {/* Title */}
+                  <motion.h2
+                    className="font-extrabold text-black"
                     style={{
-                      fontSize: isExpanded
-                        ? 'clamp(36px, 4vw, 64px)'
-                        : 'clamp(18px, 2.2vw, 26px)',
-                      writingMode: isExpanded ? 'horizontal-tb' : 'vertical-rl',
+                      writingMode: useTransform(isCollapsed, (c) =>
+                        c ? 'vertical-rl' : 'horizontal-tb'
+                      ),
                       textOrientation: 'mixed',
+                      fontSize: transforms.fontSize,
+                      opacity: 1,
                       whiteSpace: 'nowrap',
                       textAlign: 'center',
+                      lineHeight: 1,
                     }}
                   >
                     {skill.title}
-                  </h2>
+                  </motion.h2>
 
-                  {/* Description - only when expanded */}
-                  {isExpanded && (
-                    <p
-                      className="text-gray-800 leading-relaxed max-w-2xl mt-6 text-center transition-all duration-700"
-                      style={{
-                        fontSize: 'clamp(16px, 2vw, 20px)',
-                        opacity: isExpanded ? 1 : 0,
-                      }}
-                    >
-                      {skill.description}
-                    </p>
-                  )}
+                  {/* Description */}
+                  {/* <motion.p
+                    className="text-gray-800 leading-relaxed max-w-2xl text-center"
+                    style={{
+                      fontSize: 'clamp(16px, 2vw, 20px)',
+                      opacity: contentOpacity,
+                      marginTop: transforms.descMarginTop,
+                    }}
+                  >
+                    {skill.description}
+                  </motion.p> */}
+                  <motion.p
+                    className="text-gray-800 leading-relaxed max-w-2xl text-center"
+                    style={{
+                      opacity: useTransform(isCollapsed, (c) => (c ? 0 : 1)),
+                      pointerEvents: useTransform(isCollapsed, (c) =>
+                        c ? 'none' : 'auto'
+                      ),
+                      marginTop: transforms.descMarginTop,
+                    }}
+                  >
+                    {skill.description}
+                  </motion.p>
 
-                  {/* Technology Pills - only when expanded */}
-                  {isExpanded && (
-                    <div
-                      className="flex flex-wrap gap-3 justify-center mt-8 transition-all duration-700"
-                      style={{
-                        opacity: isExpanded ? 1 : 0,
-                      }}
-                    >
-                      {skill.technologies.map((tech, techIdx) => (
-                        <div
-                          key={techIdx}
-                          className="flex items-center gap-2 px-4 py-2 bg-white bg-opacity-60 backdrop-blur-sm rounded-full shadow-sm border border-black border-opacity-10"
-                        >
-                          <img
-                            src={tech.icon}
-                            alt={tech.name}
-                            className="w-6 h-6"
-                          />
-                          <span className="text-sm font-medium text-gray-800">
-                            {tech.name}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
+                  {/* Technology Pills */}
+                  {/* <motion.div
+                    className="flex flex-wrap gap-3 justify-center"
+                    style={{
+                      opacity: contentOpacity,
+                      marginTop: transforms.techMarginTop,
+                    }}
+                  > */}
+                  <motion.div
+                    className="flex flex-wrap gap-3 justify-center"
+                    style={{
+                      opacity: useTransform(isCollapsed, (c) => (c ? 0 : 1)),
+                      pointerEvents: useTransform(isCollapsed, (c) =>
+                        c ? 'none' : 'auto'
+                      ),
+                      marginTop: transforms.techMarginTop,
+                    }}
+                  >
+                    {skill.technologies.map((tech, techIdx) => (
+                      <motion.div
+                        key={techIdx}
+                        className="flex items-center gap-2 px-4 py-2 bg-white bg-opacity-60 backdrop-blur-sm rounded-full shadow-sm border border-black border-opacity-10"
+                      >
+                        <img
+                          src={tech.icon}
+                          alt={tech.name}
+                          className="w-6 h-6"
+                        />
+                        <span className="text-sm font-medium text-gray-800">
+                          {tech.name}
+                        </span>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                </motion.div>
+              </motion.div>
             )
           })}
         </div>
       </div>
 
       {/* Progress bar at bottom */}
-      <div
-        className="fixed bottom-0 left-0 right-0 h-1 z-20"
+      <motion.div
+        className="fixed bottom-0 left-0 h-1 bg-black z-20"
         style={{
-          background: `linear-gradient(to right, black ${scrollProgress}%, rgba(0,0,0,0.1) ${scrollProgress}%)`,
+          right: 0,
+          scaleX: smoothProgress,
+          transformOrigin: 'left',
         }}
       />
-
-      <style>{`
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0) rotate(var(--rotate, 0deg));
-          }
-          50% {
-            transform: translateY(-20px) rotate(var(--rotate, 0deg));
-          }
-        }
-      `}</style>
     </div>
   )
 }
