@@ -5,7 +5,7 @@
 
 /* Project custom styles (kept after Tailwind so you can override) */
 :root {
-  font-family: 'Poppins', 'SF Pro Display', system-ui, Avenir, Helvetica, Arial,
+  font-family: "Poppins", "SF Pro Display", system-ui, Avenir, Helvetica, Arial,
     sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -20,28 +20,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* * {
-  border: 1px solid green;
-} */
-/* .hero,
-.article {
-  background: #1a1a1a;
-  background-image: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(255, 255, 255, 0.03) 2px,
-      rgba(255, 255, 255, 0.03) 4px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 2px,
-      rgba(255, 255, 255, 0.03) 2px,
-      rgba(255, 255, 255, 0.03) 4px
-    );
-} */
-
 .noise-bg {
   position: relative;
   background-color: #0f0f10; /* base dark background */
@@ -49,7 +27,7 @@
 }
 
 .noise-bg::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -102,13 +80,14 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
 .footer-with-stripe {
   position: relative;
   overflow: hidden;
 }
 
 .footer-with-stripe::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
