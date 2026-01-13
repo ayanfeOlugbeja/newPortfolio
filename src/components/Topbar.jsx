@@ -70,11 +70,13 @@ export default function Topbar() {
               {navigationLinks.map((link, index) => (
                 <li
                   key={link.href}
-                  className="w-full"
+                  className={`w-full transition-all duration-500 ${
+                    isMenuOpen
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 -translate-y-5'
+                  }`}
                   style={{
-                    animation: isMenuOpen
-                      ? `slideIn 0.5s ease-out ${index * 0.1}s both`
-                      : 'none',
+                    transitionDelay: isMenuOpen ? `${index * 100}ms` : '0ms',
                   }}
                 >
                   <a
@@ -91,30 +93,8 @@ export default function Topbar() {
               ))}
             </ul>
           </nav>
-
-          {/* Language Switcher in Menu (Optional) */}
-          {/* <button
-            onClick={toggleLanguage}
-            className="absolute bottom-8 flex items-center gap-2 px-6 py-3 rounded-full text-base font-semibold transition-all duration-300 hover:scale-105 bg-gray-900 dark:bg-gray-100 text-white dark:text-black"
-          >
-            <Globe className="w-5 h-5" />
-            <span>Switch to {language === 'en' ? 'Français' : 'English'}</span>
-          </button> */}
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes slideIn {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </>
   )
 }
