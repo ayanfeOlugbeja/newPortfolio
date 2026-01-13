@@ -1,11 +1,16 @@
-import React from "react";
-import { Github } from "lucide-react";
+import React from 'react'
+import { Github } from 'lucide-react'
+import { useLanguage } from '../context/LanguageContext'
+import { translations } from '../data/translations'
 
 export default function Projects() {
+  const { language } = useLanguage()
+  const t = translations[language]
+
   const projects = [
     {
-      title: "NYSC SAED",
-      subtitle: "Skills & Entrepreneurship Platform",
+      title: 'NYSC SAED',
+      subtitle: 'Skills & Entrepreneurship Platform',
       icon: (
         <svg viewBox="0 0 200 200" className="w-32 h-32">
           <rect
@@ -44,19 +49,19 @@ export default function Projects() {
           />
         </svg>
       ),
-      color: "from-purple-100 to-purple-50",
+      color: 'from-purple-100 to-purple-50',
       details: [
-        "Suspended trainers management system",
-        "Corps members loan request & approval workflow",
-        "Admin dashboard with chart statistics",
-        "Role-based access control implementation",
-        "LGI relocation & admin department reassignment",
+        'Suspended trainers management system',
+        'Corps members loan request & approval workflow',
+        'Admin dashboard with chart statistics',
+        'Role-based access control implementation',
+        'LGI relocation & admin department reassignment',
       ],
-      technologies: ["React", "TypeScript", "MUI", "Redux"],
+      technologies: ['React', 'TypeScript', 'MUI', 'Redux'],
     },
     {
-      title: "HCMS",
-      subtitle: "Human Capital Management",
+      title: 'HCMS',
+      subtitle: 'Human Capital Management',
       icon: (
         <svg viewBox="0 0 200 200" className="w-32 h-32">
           <circle
@@ -103,19 +108,19 @@ export default function Projects() {
           />
         </svg>
       ),
-      color: "from-orange-100 to-orange-50",
+      color: 'from-orange-100 to-orange-50',
       details: [
-        "Leave Management calendar & scheduling",
-        "Loan Management with guarantor KYC",
-        "Payroll tax regime & relief configuration",
-        "Tax slabs, deductions & bonuses modules",
-        "Company cost statistics dashboard",
+        'Leave Management calendar & scheduling',
+        'Loan Management with guarantor KYC',
+        'Payroll tax regime & relief configuration',
+        'Tax slabs, deductions & bonuses modules',
+        'Company cost statistics dashboard',
       ],
-      technologies: ["React", "TypeScript", "MUI", "Redux"],
+      technologies: ['React', 'TypeScript', 'MUI', 'Redux'],
     },
     {
-      title: "JAMB NEWSLETTER",
-      subtitle: "Content Management Platform",
+      title: 'JAMB NEWSLETTER',
+      subtitle: 'Content Management Platform',
       icon: (
         <svg viewBox="0 0 200 200" className="w-32 h-32">
           <rect
@@ -147,19 +152,19 @@ export default function Projects() {
           />
         </svg>
       ),
-      color: "from-red-100 to-red-50",
+      color: 'from-red-100 to-red-50',
       details: [
-        "Complete authentication system (Login, Forgot Password, OTP)",
-        "Audit trail module with table & card views",
-        "User action tracking for compliance",
-        "Advanced sorting & filtering capabilities",
-        "Mobile-responsive design",
+        'Complete authentication system (Login, Forgot Password, OTP)',
+        'Audit trail module with table & card views',
+        'User action tracking for compliance',
+        'Advanced sorting & filtering capabilities',
+        'Mobile-responsive design',
       ],
-      technologies: ["React", "TypeScript", "MUI", "Redux"],
+      technologies: ['React', 'TypeScript', 'MUI', 'Redux'],
     },
     {
-      title: "EXEAT SYSTEM",
-      subtitle: "Student Management Solution",
+      title: 'EXEAT SYSTEM',
+      subtitle: 'Student Management Solution',
       icon: (
         <svg viewBox="0 0 200 200" className="w-32 h-32">
           <rect
@@ -192,31 +197,32 @@ export default function Projects() {
           />
         </svg>
       ),
-      color: "from-green-100 to-green-50",
+      color: 'from-green-100 to-green-50',
       details: [
-        "Digital exeat request & approval workflow",
-        "Real-time status tracking system",
-        "Email notifications via EmailJS",
-        "Firebase backend integration",
-        "Improved efficiency & accountability",
+        'Digital exeat request & approval workflow',
+        'Real-time status tracking system',
+        'Email notifications via EmailJS',
+        'Firebase backend integration',
+        'Improved efficiency & accountability',
       ],
-      technologies: ["React", "Tailwind", "Firebase", "Redux"],
+      technologies: ['React', 'Tailwind', 'Firebase', 'Redux'],
     },
-  ];
+  ]
 
   return (
     <section id="projects" className="py-20 bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="flex items-center justify-between mb-12">
           <h2 className="text-5xl font-black italic tracking-tight text-black dark:text-white">
-            PROJECTS
+            {t.projects.title}
           </h2>
 
           <a
             href="https://github.com/aiyedogbon"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-black rounded-full hover:bg-gray-800 dark:hover:bg-gray-200 transition font-semibold">
+            className="flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-black rounded-full hover:bg-gray-800 dark:hover:bg-gray-200 transition font-semibold"
+          >
             <Github className="w-5 h-5" />
             GitHub
           </a>
@@ -228,7 +234,8 @@ export default function Projects() {
               <div className="flip-card-inner relative w-full h-full transition-transform duration-700 transform-style-3d">
                 {/* Front */}
                 <div
-                  className={`absolute inset-0 backface-hidden bg-gradient-to-br ${project.color} border-4 border-gray-900 dark:border-gray-700 rounded-2xl p-8 flex flex-col items-center justify-center shadow-lg`}>
+                  className={`absolute inset-0 backface-hidden bg-gradient-to-br ${project.color} border-4 border-gray-900 dark:border-gray-700 rounded-2xl p-8 flex flex-col items-center justify-center shadow-lg`}
+                >
                   {project.icon}
                   <h3 className="text-2xl font-black mt-4 text-gray-900 dark:text-gray-100">
                     {project.title}
@@ -237,7 +244,7 @@ export default function Projects() {
                     {project.subtitle}
                   </p>
                   <p className="text-xs mt-4 italic text-gray-600 dark:text-gray-400">
-                    Hover to see details
+                    {t.projects.hoverHint}
                   </p>
                 </div>
 
@@ -266,13 +273,14 @@ export default function Projects() {
                   {/* Technologies */}
                   <div className="pt-4 mt-4 border-t border-gray-700 dark:border-gray-600">
                     <p className="text-xs uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">
-                      Technologies
+                      {t.projects.technologies}
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {project.technologies.map((tech, i) => (
                         <span
                           key={i}
-                          className="px-3 py-1 text-xs font-semibold rounded-full bg-gray-800 dark:bg-gray-700 text-gray-200 dark:text-gray-300 border border-gray-700 dark:border-gray-600">
+                          className="px-3 py-1 text-xs font-semibold rounded-full bg-gray-800 dark:bg-gray-700 text-gray-200 dark:text-gray-300 border border-gray-700 dark:border-gray-600"
+                        >
                           {tech}
                         </span>
                       ))}
@@ -316,5 +324,5 @@ export default function Projects() {
         }
       `}</style>
     </section>
-  );
+  )
 }

@@ -1,35 +1,7 @@
 import React, { useState } from 'react'
 import { Menu, X, ChevronDown, Globe } from 'lucide-react'
-
-// Mock context and translations for demo
-const useLanguage = () => {
-  const [language, setLanguage] = useState('en')
-  return {
-    language,
-    toggleLanguage: () => setLanguage(language === 'en' ? 'fr' : 'en'),
-  }
-}
-
-const translations = {
-  en: {
-    nav: {
-      about: 'About',
-      skills: 'Skills',
-      projects: 'Projects',
-      blog: 'Blog',
-      contact: 'Contact',
-    },
-  },
-  fr: {
-    nav: {
-      about: 'À propos',
-      skills: 'Compétences',
-      projects: 'Projets',
-      blog: 'Blog',
-      contact: 'Contact',
-    },
-  },
-}
+import { useLanguage } from '../context/LanguageContext'
+import { translations } from '../data/translations'
 
 export default function Topbar() {
   const { language, toggleLanguage } = useLanguage()

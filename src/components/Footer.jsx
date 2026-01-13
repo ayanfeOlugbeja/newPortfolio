@@ -1,7 +1,10 @@
 import React from 'react'
+import { useLanguage } from '../context/LanguageContext'
+import { translations } from '../data/translations'
 
 export default function Footer() {
-  // const currentYear = new Date().getFullYear()
+  const { language } = useLanguage()
+  const t = translations[language]
 
   return (
     <footer
@@ -143,7 +146,7 @@ export default function Footer() {
 
           {/* Middle Section - Quick Links */}
           <div className="ml-auto">
-            <h4 className="text-xl font-bold mb-4">Quick Links</h4>
+            <h4 className="text-xl font-bold mb-4">{t.footer.quickLinks}</h4>
             <nav aria-label="Footer navigation">
               <ul className="space-y-2">
                 <li>
@@ -151,7 +154,7 @@ export default function Footer() {
                     href="#about"
                     className="hover:text-purple-300 transition-colors duration-300"
                   >
-                    About
+                    {t.nav.about}
                   </a>
                 </li>
                 <li>
@@ -159,7 +162,7 @@ export default function Footer() {
                     href="#projects"
                     className="hover:text-purple-300 transition-colors duration-300"
                   >
-                    Projects
+                    {t.nav.projects}
                   </a>
                 </li>
                 <li>
@@ -167,7 +170,7 @@ export default function Footer() {
                     href="#contact"
                     className="hover:text-purple-300 transition-colors duration-300"
                   >
-                    Contact
+                    {t.nav.contact}
                   </a>
                 </li>
                 <li>
@@ -175,7 +178,7 @@ export default function Footer() {
                     href="#blog"
                     className="hover:text-purple-300 transition-colors duration-300"
                   >
-                    Blog
+                    {t.nav.blog}
                   </a>
                 </li>
                 <li>

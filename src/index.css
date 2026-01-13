@@ -5,12 +5,12 @@
 
 /* Project custom styles (kept after Tailwind so you can override) */
 :root {
-  font-family: "Poppins", "SF Pro Display", system-ui, Avenir, Helvetica, Arial,
+  font-family: 'Poppins', 'SF Pro Display', system-ui, Avenir, Helvetica, Arial,
     sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
+  color-scheme: light only;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
 
@@ -27,7 +27,7 @@
 }
 
 .noise-bg::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -81,13 +81,19 @@ button:focus-visible {
   }
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: light only;
+  }
+}
+
 .footer-with-stripe {
   position: relative;
   overflow: hidden;
 }
 
 .footer-with-stripe::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: 0;

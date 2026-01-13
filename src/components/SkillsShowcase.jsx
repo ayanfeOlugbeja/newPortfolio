@@ -336,6 +336,8 @@
 import React, { useRef, useState } from 'react'
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
 import { Code2, FileText, Palette } from 'lucide-react'
+import { useLanguage } from '../context/LanguageContext'
+import { translations } from '../data/translations'
 
 // CardFlip component for mobile
 const CardFlip = ({
@@ -487,6 +489,8 @@ const CardFlip = ({
 // Main SkillsShowcase component
 const SkillsShowcase = () => {
   const sectionRef = useRef(null)
+  const { language } = useLanguage()
+  const t = translations[language]
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -502,11 +506,10 @@ const SkillsShowcase = () => {
   const skills = [
     {
       index: 0,
-      label: 'WEB DEVELOPMENT',
-      title: 'Web Development',
-      subtitle: 'Building modern web experiences',
-      description:
-        'Developing modern web applications with cutting-edge technologies including Web3 and blockchain integration.',
+      label: t.skills.web.label,
+      title: t.skills.web.title,
+      subtitle: t.skills.web.subtitle,
+      description: t.skills.web.description,
       bgColor: '#A8D5F0',
       icon: Code2,
       technologies: [
@@ -527,20 +530,14 @@ const SkillsShowcase = () => {
           icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/solidity/solidity-original.svg',
         },
       ],
-      features: [
-        'React & Modern JS',
-        'Web3 Integration',
-        'Responsive Design',
-        'Performance Optimized',
-      ],
+      features: t.skills.web.features,
     },
     {
       index: 1,
-      label: 'TECHNICAL WRITING',
-      title: 'Technical Writing',
-      subtitle: 'Crafting clear documentation',
-      description:
-        'Creating clear, engaging technical content and tutorials for developers across platforms.',
+      label: t.skills.writing.label,
+      title: t.skills.writing.title,
+      subtitle: t.skills.writing.subtitle,
+      description: t.skills.writing.description,
       bgColor: '#FFE9A8',
       icon: FileText,
       technologies: [
@@ -553,20 +550,14 @@ const SkillsShowcase = () => {
           icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/markdown/markdown-original.svg',
         },
       ],
-      features: [
-        'Technical Tutorials',
-        'Developer Guides',
-        'API Documentation',
-        'Blog Posts',
-      ],
+      features: t.skills.writing.features,
     },
     {
       index: 2,
-      label: 'DESIGN & BRANDING',
-      title: 'Design & Branding',
-      subtitle: 'Creating beautiful experiences',
-      description:
-        'Creating beautiful, user-centered designs that bring ideas to life with modern tools and creative thinking.',
+      label: t.skills.design.label,
+      title: t.skills.design.title,
+      subtitle: t.skills.design.subtitle,
+      description: t.skills.design.description,
       bgColor: '#D4C5F9',
       icon: Palette,
       technologies: [
@@ -587,12 +578,7 @@ const SkillsShowcase = () => {
           icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/canva/canva-original.svg',
         },
       ],
-      features: [
-        'UI/UX Design',
-        'Brand Identity',
-        'Visual Design',
-        'Prototyping',
-      ],
+      features: t.skills.design.features,
     },
   ]
 
