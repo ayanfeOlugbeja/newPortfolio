@@ -65,7 +65,7 @@ function ElegantShape({
 }
 
 function HeroGeometric({
-  badge = 'Open to work',
+  badge = 'Site under maintenance',
   title1 = 'Elevate Your Digital Vision',
   title2 = 'Crafting Exceptional Websites',
   description = 'Crafting exceptional digital experiences through innovative design and cutting-edge technology.',
