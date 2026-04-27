@@ -210,10 +210,11 @@ export default function Projects() {
   ]
 
   return (
-    <section id="projects" className="py-20 bg-white dark:bg-gray-900">
+    <section id="projects" className="py-16 sm:py-20 bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4 max-w-6xl">
-        <div className="flex items-center justify-between mb-12">
-          <h2 className="text-5xl font-black italic tracking-tight text-black dark:text-white">
+        {/* HEADER */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10 sm:mb-12">
+          <h2 className="text-3xl sm:text-5xl font-black italic tracking-tight text-black dark:text-white">
             {t.projects.title}
           </h2>
 
@@ -221,65 +222,72 @@ export default function Projects() {
             href="https://github.com/aiyedogbon"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-black rounded-full hover:bg-gray-800 dark:hover:bg-gray-200 transition font-semibold"
+            className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base bg-gray-900 dark:bg-gray-100 text-white dark:text-black rounded-full hover:bg-gray-800 dark:hover:bg-gray-200 transition font-semibold w-fit"
           >
-            <Github className="w-5 h-5" />
+            <Github className="w-4 h-4 sm:w-5 sm:h-5" />
             GitHub
           </a>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        {/* GRID */}
+        <div className="grid sm:grid-cols-2 gap-6 sm:gap-8">
           {projects.map((project, index) => (
-            <div key={index} className="perspective-1000 h-96 group">
+            <div key={index} className="perspective-1000 h-80 sm:h-96 group">
               <div className="flip-card-inner relative w-full h-full transition-transform duration-700 transform-style-3d">
-                {/* Front */}
+                {/* FRONT */}
                 <div
-                  className={`absolute inset-0 backface-hidden bg-gradient-to-br ${project.color} border-4 border-gray-900 dark:border-gray-700 rounded-2xl p-8 flex flex-col items-center justify-center shadow-lg`}
+                  className={`absolute inset-0 backface-hidden bg-gradient-to-br ${project.color} border-2 sm:border-4 border-gray-900 dark:border-gray-700 rounded-2xl p-4 sm:p-8 flex flex-col items-center justify-center shadow-lg`}
                 >
-                  {project.icon}
-                  <h3 className="text-2xl font-black mt-4 text-gray-900 dark:text-gray-100">
+                  <div className="scale-75 sm:scale-100">{project.icon}</div>
+
+                  <h3 className="text-lg sm:text-2xl font-black mt-3 sm:mt-4 text-gray-900 dark:text-gray-100 text-center">
                     {project.title}
                   </h3>
-                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+
+                  <p className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 text-center">
                     {project.subtitle}
                   </p>
-                  <p className="text-xs mt-4 italic text-gray-600 dark:text-gray-400">
+
+                  <p className="text-[10px] sm:text-xs mt-3 sm:mt-4 italic text-gray-600 dark:text-gray-400 text-center">
                     {t.projects.hoverHint}
                   </p>
                 </div>
 
-                {/* Back */}
-                <div className="absolute inset-0 backface-hidden rotate-y-180 bg-gray-900 dark:bg-gray-800 border-4 border-gray-900 dark:border-gray-700 rounded-2xl p-8 shadow-lg flex flex-col">
-                  <h3 className="text-2xl font-bold text-white dark:text-gray-100">
+                {/* BACK */}
+                <div className="absolute inset-0 backface-hidden rotate-y-180 bg-gray-900 dark:bg-gray-800 border-2 sm:border-4 border-gray-900 dark:border-gray-700 rounded-2xl p-4 sm:p-8 shadow-lg flex flex-col">
+                  <h3 className="text-lg sm:text-2xl font-bold text-white dark:text-gray-100">
                     {project.title}
                   </h3>
-                  <p className="text-sm text-gray-300 dark:text-gray-400 mb-4">
+
+                  <p className="text-xs sm:text-sm text-gray-300 dark:text-gray-400 mb-3 sm:mb-4">
                     {project.subtitle}
                   </p>
 
-                  <div className="space-y-2 flex-1">
+                  {/* DETAILS (FIXED OVERFLOW) */}
+                  <div className="space-y-2 flex-1 overflow-y-auto pr-1">
                     {project.details.map((detail, i) => (
                       <div key={i} className="flex gap-2">
-                        <span className="text-yellow-400 dark:text-yellow-300">
+                        <span className="text-yellow-400 text-xs sm:text-sm">
                           •
                         </span>
-                        <p className="text-sm text-gray-200 dark:text-gray-300">
+                        <p className="text-xs sm:text-sm text-gray-200 leading-snug">
                           {detail}
                         </p>
                       </div>
                     ))}
                   </div>
 
-                  {/* Technologies */}
-                  <div className="pt-4 mt-4 border-t border-gray-700 dark:border-gray-600">
-                    <p className="text-xs uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">
+                  {/* TECHNOLOGIES */}
+                  <div className="pt-3 sm:pt-4 mt-3 sm:mt-4 border-t border-gray-700 dark:border-gray-600">
+                    <p className="text-[10px] sm:text-xs uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">
                       {t.projects.technologies}
                     </p>
-                    <div className="flex flex-wrap gap-2">
+
+                    <div className="flex flex-wrap gap-1 sm:gap-2">
                       {project.technologies.map((tech, i) => (
                         <span
                           key={i}
-                          className="px-3 py-1 text-xs font-semibold rounded-full bg-gray-800 dark:bg-gray-700 text-gray-200 dark:text-gray-300 border border-gray-700 dark:border-gray-600"
+                          className="px-2 sm:px-3 py-1 text-[10px] sm:text-xs font-semibold rounded-full bg-gray-800 dark:bg-gray-700 text-gray-200 dark:text-gray-300 border border-gray-700 dark:border-gray-600"
                         >
                           {tech}
                         </span>
@@ -293,6 +301,7 @@ export default function Projects() {
         </div>
       </div>
 
+      {/* CSS (UNCHANGED - IMPORTANT FOR FLIP) */}
       <style jsx>{`
         .perspective-1000 {
           perspective: 1000px;
@@ -308,7 +317,6 @@ export default function Projects() {
           will-change: transform;
         }
 
-        /* ✅ THIS is what actually triggers the flip */
         .group:hover .flip-card-inner {
           transform: rotateY(180deg);
         }
