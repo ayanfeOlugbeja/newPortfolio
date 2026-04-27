@@ -30,7 +30,7 @@ export default function Footer() {
               width: '100%',
             }}
           >
-            AIYEDOGBON
+            EIWANLAN
           </h2>
 
           {/* Middle layer */}
@@ -49,7 +49,7 @@ export default function Footer() {
               width: '100%',
             }}
           >
-            AIYEDOGBON
+            EIWANLAN
           </h2>
 
           {/* Bottom layer - brightest */}
@@ -64,7 +64,7 @@ export default function Footer() {
               position: 'relative',
             }}
           >
-            AIYEDOGBON
+            EIWANLAN
           </h2>
         </div>
       </div>
@@ -75,9 +75,9 @@ export default function Footer() {
           {/* Left Section - Logo & Social */}
           <div>
             <h3 className="text-4xl md:text-5xl font-black tracking-tight mb-2">
-              AIYEDOGBON
+              EIWANLAN
             </h3>
-            <p className="text-lg text-white mb-6 ">ABRAHAM</p>
+            <p className="text-lg text-white mb-6 ">BLESSED</p>
 
             {/* Social Links */}
             <div className="flex gap-4">
@@ -196,7 +196,7 @@ export default function Footer() {
           {/* Right Section - Additional Info */}
           {/* <div className="text-right">
             <p className="text-sm text-gray-400 mb-2">
-              {currentYear} Abraham Aiyedogbon
+              {currentYear} bLessed Eiwanlan.
             </p>
             <p className="text-sm text-gray-400">All rights reserved</p>
           </div> */}

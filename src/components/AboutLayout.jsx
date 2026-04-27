@@ -1,13 +1,7 @@
-import React from "react";
-import Divider from "./Divider";
+import React from 'react'
+import Divider from './Divider'
 
-export default function AboutLayout({
-  mission,
-  title,
-  description,
-  details,
-  cta,
-}) {
+export default function AboutLayout({ mission, title, description, details }) {
   return (
     <section className="py-20 px-4 bg-white dark:bg-gray-900">
       <div className="container mx-auto max-w-6xl">
@@ -37,20 +31,21 @@ export default function AboutLayout({
               {details.map((detail, index) => (
                 <p
                   key={index}
-                  className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                  className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed"
+                >
                   {detail}
                 </p>
               ))}
             </div>
 
             {/* CTA Link */}
-            {cta && (
+            {/* {cta && (
               <a
                 href={cta.href}
                 className="text-black dark:text-white font-medium hover:opacity-70 transition-opacity underline">
                 {cta.text} →
               </a>
-            )}
+            )} */}
           </div>
         </div>
 
@@ -58,5 +53,5 @@ export default function AboutLayout({
         <Divider className="mt-16" />
       </div>
     </section>
-  );
+  )
 }

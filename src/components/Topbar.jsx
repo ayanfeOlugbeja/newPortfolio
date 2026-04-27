@@ -21,22 +21,22 @@ export default function Topbar() {
   return (
     <>
       {/* Closed State Header */}
-      <header className="bg-transparent absolute top-0 left-0 right-0 z-50 flex items-center justify-between py-6 px-6 md:px-8 lg:px-12">
+      <header className="bg-transparent absolute top-0 left-0 right-0 z-50 flex items-end justify-end py-6 px-6 md:px-8 lg:px-12">
         {/* Language Switcher - Far Left */}
-        <button
+        {/* <button
           onClick={toggleLanguage}
           aria-label="Toggle language between English and French"
           className="flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-300 hover:scale-105 bg-gray-100 dark:bg-gray-100 text-black dark:text-black shadow-lg hover:shadow-xl"
         >
           <Globe className="w-4 h-4" />
           <span>{language === 'en' ? 'FR' : 'EN'}</span>
-        </button>
+        </button> */}
 
         {/* Hamburger Menu - Far Right */}
         <button
           onClick={() => setIsMenuOpen(true)}
           aria-label="Open navigation menu"
-          className="p-3 rounded-full transition-all duration-300 bg-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-110"
+          className="p-3 rounded-full transition-all duration-300 bg-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-110 "
         >
           <Menu
             className="w-7 h-7 text-black dark:text-white"

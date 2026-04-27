@@ -9,8 +9,8 @@ export default function Projects() {
 
   const projects = [
     {
-      title: 'NYSC SAED',
-      subtitle: 'Skills & Entrepreneurship Platform',
+      title: 'SLOTLY',
+      subtitle: 'Hotel Booking & Reservation Platform',
       icon: (
         <svg viewBox="0 0 200 200" className="w-32 h-32">
           <rect
@@ -51,17 +51,17 @@ export default function Projects() {
       ),
       color: 'from-purple-100 to-purple-50',
       details: [
-        'Suspended trainers management system',
-        'Corps members loan request & approval workflow',
-        'Admin dashboard with chart statistics',
-        'Role-based access control implementation',
-        'LGI relocation & admin department reassignment',
+        'Hotel landing page redesign focused on improving user engagement and booking conversions',
+        'User onboarding flow for seamless registration and reservation access',
+        'Booking and reservation system for checking availability and managing room bookings',
+        'Admin dashboard for managing bookings, guests, and reservation data',
+        'SEO optimization and performance improvements to enhance search visibility',
       ],
       technologies: ['React', 'TypeScript', 'MUI', 'Redux'],
     },
     {
-      title: 'HCMS',
-      subtitle: 'Human Capital Management',
+      title: 'EXPLORA',
+      subtitle: 'Travel Agency Platform Redesign & Management System',
       icon: (
         <svg viewBox="0 0 200 200" className="w-32 h-32">
           <circle
@@ -110,115 +110,26 @@ export default function Projects() {
       ),
       color: 'from-orange-100 to-orange-50',
       details: [
-        'Leave Management calendar & scheduling',
-        'Loan Management with guarantor KYC',
-        'Payroll tax regime & relief configuration',
-        'Tax slabs, deductions & bonuses modules',
-        'Company cost statistics dashboard',
+        'Travel agency landing page redesign focused on user engagement and conversion improvement',
+        'User onboarding flow to streamline account creation and booking access',
+        'Email notification system for booking updates and user communication',
+        'Admin dashboard for managing users, bookings, and platform operations',
+        'Dashboard metrics for tracking platform activity and usage insights',
+        'SEO optimization to improve visibility and organic traffic',
       ],
       technologies: ['React', 'TypeScript', 'MUI', 'Redux'],
-    },
-    {
-      title: 'JAMB NEWSLETTER',
-      subtitle: 'Content Management Platform',
-      icon: (
-        <svg viewBox="0 0 200 200" className="w-32 h-32">
-          <rect
-            x="50"
-            y="50"
-            width="100"
-            height="120"
-            fill="#EF4444"
-            stroke="#1F2937"
-            strokeWidth="3"
-            rx="8"
-          />
-          <rect x="65" y="70" width="70" height="8" fill="#FCD34D" rx="2" />
-          <rect x="65" y="85" width="70" height="8" fill="#FCD34D" rx="2" />
-          <rect x="65" y="100" width="50" height="8" fill="#FCD34D" rx="2" />
-          <circle
-            cx="100"
-            cy="135"
-            r="20"
-            fill="#8B5CF6"
-            stroke="#1F2937"
-            strokeWidth="2"
-          />
-          <path
-            d="M100 125 L100 145 M90 135 L110 135"
-            stroke="#FFF"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-        </svg>
-      ),
-      color: 'from-red-100 to-red-50',
-      details: [
-        'Complete authentication system (Login, Forgot Password, OTP)',
-        'Audit trail module with table & card views',
-        'User action tracking for compliance',
-        'Advanced sorting & filtering capabilities',
-        'Mobile-responsive design',
-      ],
-      technologies: ['React', 'TypeScript', 'MUI', 'Redux'],
-    },
-    {
-      title: 'EXEAT SYSTEM',
-      subtitle: 'Student Management Solution',
-      icon: (
-        <svg viewBox="0 0 200 200" className="w-32 h-32">
-          <rect
-            x="60"
-            y="50"
-            width="80"
-            height="100"
-            fill="#10B981"
-            stroke="#1F2937"
-            strokeWidth="3"
-            rx="5"
-          />
-          <circle
-            cx="100"
-            cy="85"
-            r="15"
-            fill="#FCD34D"
-            stroke="#1F2937"
-            strokeWidth="2"
-          />
-          <rect x="75" y="110" width="50" height="6" fill="#8B5CF6" rx="1" />
-          <rect x="75" y="122" width="50" height="6" fill="#8B5CF6" rx="1" />
-          <path
-            d="M85 135 L95 143 L115 125"
-            stroke="#EF4444"
-            strokeWidth="4"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ),
-      color: 'from-green-100 to-green-50',
-      details: [
-        'Digital exeat request & approval workflow',
-        'Real-time status tracking system',
-        'Email notifications via EmailJS',
-        'Firebase backend integration',
-        'Improved efficiency & accountability',
-      ],
-      technologies: ['React', 'Tailwind', 'Firebase', 'Redux'],
     },
   ]
-
   return (
     <section id="projects" className="py-20 bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4 max-w-6xl">
-        <div className="flex items-center justify-between mb-12">
+        {/* <div className="flex items-center justify-between mb-12">
           <h2 className="text-5xl font-black italic tracking-tight text-black dark:text-white">
             {t.projects.title}
           </h2>
 
           <a
-            href="https://github.com/aiyedogbon"
+            href="https://github.com/"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-black rounded-full hover:bg-gray-800 dark:hover:bg-gray-200 transition font-semibold"
@@ -226,7 +137,7 @@ export default function Projects() {
             <Github className="w-5 h-5" />
             GitHub
           </a>
-        </div>
+        </div> */}
 
         <div className="grid md:grid-cols-2 gap-8">
           {projects.map((project, index) => (

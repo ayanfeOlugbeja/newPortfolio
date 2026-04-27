@@ -17,10 +17,9 @@ export const translations = {
     about: {
       mission: 'About Me',
       title: 'About Me',
-      bio1: 'I am a passionate Software Engineer with over three years of experience building and maintaining responsive web applications using React.js, TypeScript, Node.js, Firebase, Django, and Tailwind CSS.',
-      bio2: "Currently, I'm a Software Engineer at SIDMACH Technologies in Lagos, Nigeria, where I contribute to enterprise applications including Human Capital Management Systems (HCMS), NYSC SAED, and various other solutions.",
-      bio3: 'My journey in tech started with a passion for solving complex problems through code. I hold a Bachelor of Science in Information and Communication Technologies from Glorious Vision University.',
-      bio4: "I'm particularly interested in UI/UX design principles, system optimization, and creating accessible web experiences. I enjoy tackling complex challenges, mentoring others, and contributing innovative solutions to both academic and real-world problems.",
+      bio1: 'I am a Computer Science graduate with practical experience in frontend web development and strong proficiency in Microsoft Office tools. Through my professional experience, I have gained hands-on exposure to real-world software development tasks, collaborative workflows, and problem-solving in agile environments.',
+      bio2: 'I have contributed to building and improving user-facing web interfaces, strengthening my understanding of responsive design, clean implementation practices, and attention to detail. These experiences have helped me develop adaptability, discipline, and the ability to learn quickly in fast-paced teams.',
+      bio3: 'I am motivated to join a dynamic organization where I can apply my technical skills, continue developing as a developer, contribute meaningfully to real projects, and deliver measurable impact.',
       learnMore: 'Learn more about my journey',
     },
     skills: {

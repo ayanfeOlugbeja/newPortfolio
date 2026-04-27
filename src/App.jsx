@@ -4,7 +4,7 @@ import { LanguageProvider } from './context/LanguageContext'
 import Topbar from './components/Topbar'
 import HeroSection from './components/HeroSection'
 import About from './components/About'
-import SkillsShowcase from './components/SkillsShowcase'
+// import SkillsShowcase from './components/SkillsShowcase'
 
 import Projects from './components/Projects'
 import TechnicalWriteups from './components/TechnicalWriteups'
@@ -25,11 +25,11 @@ function App() {
         {/* Main content sections */}
         <main role="main" className="w-full">
           <About />
-          <SkillsShowcase />
-          <ExperienceMarquee />
+          {/* <SkillsShowcase /> */}
+          {/* <ExperienceMarquee /> */}
           <Projects />
 
-          <TechnicalWriteups />
+          {/* <TechnicalWriteups /> */}
           <ContactForm />
         </main>
 
