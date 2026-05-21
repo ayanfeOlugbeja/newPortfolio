@@ -9,10 +9,9 @@ export const translations = {
     },
     hero: {
       badge: 'Open to work',
-      title1: 'Elevate Your Digital Vision',
-      title2: 'Crafting Exceptional Websites',
-      description:
-        'Crafting exceptional digital experiences through innovative design and cutting-edge technology.',
+      title1: 'Site is under construction',
+      title2: '',
+      description: 'Contact me at aiyedogbonabraham@gmail.com',
     },
     about: {
       mission: 'About Me',
@@ -128,10 +127,9 @@ export const translations = {
     },
     hero: {
       badge: 'Disponible',
-      title1: 'Élevez Votre Vision Numérique',
-      title2: 'Créer des Sites Web Exceptionnels',
-      description:
-        'Créer des expériences numériques exceptionnelles grâce à un design innovant et une technologie de pointe.',
+      title1: 'Le site est en construction',
+      title2: '',
+      description: 'Contactez-moi à aiyedogbonabraham@gmail.com',
     },
     about: {
       mission: 'À PROPOS',
