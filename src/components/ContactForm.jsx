@@ -46,7 +46,7 @@ export default function ContactForm() {
 
   const toggleSubject = (value) => {
     setSelectedSubjects((prev) =>
-      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value],
     )
   }
 
@@ -112,7 +112,7 @@ export default function ContactForm() {
     setStatus({ loading: true, error: null, success: false })
 
     try {
-      const response = await fetch('https://formspree.io/f/myzrdprd', {
+      const response = await fetch('https://formspree.io/f/xrevllkk', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -291,7 +291,7 @@ export default function ContactForm() {
                   <div className="flex flex-wrap gap-2 mt-3">
                     {selectedSubjects.map((value) => {
                       const label = subjects.find(
-                        (s) => s.value === value
+                        (s) => s.value === value,
                       )?.label
                       return (
                         <span
