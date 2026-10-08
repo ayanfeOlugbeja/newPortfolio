@@ -1,207 +1,434 @@
-import React from 'react'
+import React, { useState, useRef, useEffect, useId } from 'react'
 import { useLanguage } from '../context/LanguageContext'
 import { translations } from '../data/translations'
 
-export default function Footer() {
+export default function ContactForm() {
   const { language } = useLanguage()
   const t = translations[language]
+  const uid = useId()
+
+  const cellInput =
+    'w-full bg-transparent text-lg outline-none placeholder-gray-400'
+  const fieldInput = `${cellInput} text-black dark:text-white placeholder-gray-400 dark:placeholder-gray-600`
+
+  // Each cell is a <label>: tapping anywhere in it focuses the field, and the
+  // cell highlights while focused (the inputs themselves have no outline).
+  const cell =
+    'block cursor-text p-4 transition-colors focus-within:bg-gray-50 dark:focus-within:bg-gray-700/40 sm:p-6'
+  const fieldLabel = 'block font-bold mb-2 text-black dark:text-white'
+
+  const subjects = [
+    { value: 'project', label: t.contact.subjects.project },
+    { value: 'collaboration', label: t.contact.subjects.collaboration },
+    { value: 'inquiry', label: t.contact.subjects.inquiry },
+  ]
+
+  const [selectedSubjects, setSelectedSubjects] = useState([])
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const dropdownRef = useRef(null)
+  const formRef = useRef(null)
+  const successTimerRef = useRef(null)
+
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    jobTitle: '',
+    company: '',
+    message: '',
+  })
+
+  const [status, setStatus] = useState({
+    loading: false,
+    error: null,
+    success: false,
+  })
+
+  // Close the dropdown on an outside tap/click or Escape.
+  // pointerdown rather than mousedown: iOS doesn't fire mouse events for taps
+  // on non-clickable areas, so the old listener could miss outside taps.
+  useEffect(() => {
+    function handlePointerDown(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false)
+      }
+    }
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') setIsDropdownOpen(false)
+    }
+    document.addEventListener('pointerdown', handlePointerDown)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
+  // Don't leave the success timer running if the form unmounts
+  useEffect(() => () => clearTimeout(successTimerRef.current), [])
+
+  const toggleSubject = (value) => {
+    setSelectedSubjects((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value],
+    )
+  }
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  // Show the error and take the visitor to the field that needs fixing
+  // (on a phone the keyboard opens right there instead of them hunting for it)
+  const fail = (message, field) => {
+    setStatus({ loading: false, error: message, success: false })
+
+    if (field === 'subjects') {
+      setIsDropdownOpen(true)
+      dropdownRef.current?.scrollIntoView({
+        block: 'center',
+        behavior: 'smooth',
+      })
+    } else {
+      formRef.current?.elements.namedItem(field)?.focus()
+    }
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (status.loading) return
+
+    if (!formData.name.trim()) {
+      fail(t.contact.errors.nameRequired, 'name')
+      return
+    }
+
+    if (!formData.email.trim()) {
+      fail(t.contact.errors.emailRequired, 'email')
+      return
+    }
+
+    if (!validateEmail(formData.email)) {
+      fail(t.contact.errors.invalidEmail, 'email')
+      return
+    }
+
+    if (selectedSubjects.length === 0) {
+      fail(t.contact.errors.subjectRequired, 'subjects')
+      return
+    }
+
+    if (!formData.message.trim()) {
+      fail(t.contact.errors.messageRequired, 'message')
+      return
+    }
+
+    setStatus({ loading: true, error: null, success: false })
+
+    try {
+      const response = await fetch('https://formspree.io/f/xrevllkk', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          jobTitle: formData.jobTitle,
+          company: formData.company,
+          subjects: selectedSubjects
+            .map((val) => subjects.find((s) => s.value === val)?.label)
+            .join(', '),
+          message: formData.message,
+        }),
+      })
+
+      if (response.ok) {
+        setStatus({ loading: false, error: null, success: true })
+        setFormData({
+          name: '',
+          email: '',
+          jobTitle: '',
+          company: '',
+          message: '',
+        })
+        setSelectedSubjects([])
+
+        successTimerRef.current = setTimeout(() => {
+          setStatus({ loading: false, error: null, success: false })
+        }, 5000)
+      } else {
+        setStatus({
+          loading: false,
+          error: t.contact.errors.sendFailed,
+          success: false,
+        })
+      }
+    } catch {
+      setStatus({
+        loading: false,
+        error: t.contact.errors.genericError,
+        success: false,
+      })
+    }
+  }
 
   return (
-    <footer
-      className="footer-with-stripe relative bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-gray-200 py-16 overflow-hidden pt-36"
-      role="contentinfo"
-    >
-      {/* Gradient Text Background Effect */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="relative w-full px-4">
-          {/* Top layer - lightest */}
-          <h2
-            className="text-[8rem] md:text-[10rem] lg:text-[12rem] font-black tracking-tight text-center leading-none opacity-15"
-            style={{
-              background:
-                'linear-gradient(to bottom, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              position: 'absolute',
-              top: '-60px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: '100%',
-            }}
-          >
-            AIYEDOGBON
+    <section id="contact" className="w-full py-0">
+      {/* Header Section */}
+      <div className="px-5 pt-14 pb-10 sm:px-6 md:px-8 md:pt-20 md:pb-12 lg:px-16">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="mb-4 break-words text-4xl font-black italic tracking-tight text-black dark:text-white sm:text-5xl md:mb-6 md:text-7xl lg:text-8xl">
+            {t.contact.title}
           </h2>
-
-          {/* Middle layer */}
-          <h2
-            className="text-[8rem] md:text-[10rem] lg:text-[12rem] font-black tracking-tight text-center leading-none opacity-15"
-            style={{
-              background:
-                'linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.04) 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              position: 'absolute',
-              top: '-30px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: '100%',
-            }}
-          >
-            AIYEDOGBON
-          </h2>
-
-          {/* Bottom layer - brightest */}
-          <h2
-            className="text-[8rem] md:text-[10rem] lg:text-[12rem] font-black tracking-tight text-center leading-none opacity-15"
-            style={{
-              background:
-                'linear-gradient(to bottom, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.15) 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              position: 'relative',
-            }}
-          >
-            AIYEDOGBON
-          </h2>
+          <p className="text-lg md:text-xl text-black dark:text-white max-w-2xl">
+            {t.contact.subtitle}
+          </p>
         </div>
       </div>
 
-      {/* Footer Content */}
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-          {/* Left Section - Logo & Social */}
-          <div>
-            <h3 className="text-4xl md:text-5xl font-black tracking-tight mb-2">
-              AIYEDOGBON
-            </h3>
-            <p className="text-lg text-white mb-6 ">ABRAHAM</p>
+      {/* Form Section */}
+      <div className="w-full bg-white dark:bg-gray-900 px-5 pb-14 sm:px-6 md:px-8 md:pb-20 lg:px-16">
+        <div className="max-w-6xl mx-auto">
+          {/* The extra padding is only for larger screens: on phones the form gets the full width */}
+          <div
+            className="overflow-hidden p-0 md:p-4"
+            style={{ marginTop: '-2rem' }}
+          >
+            <form
+              ref={formRef}
+              onSubmit={handleSubmit}
+              noValidate
+              aria-busy={status.loading}
+              className="bg-white dark:bg-gray-800 border-2 border-black dark:border-gray-700 mt-10"
+            >
+              {/* Name & Email Row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 divide-y-2 md:divide-y-0 md:divide-x-2 divide-black dark:divide-gray-700">
+                <label className={cell}>
+                  <span className={fieldLabel}>{t.contact.name} *</span>
+                  <input
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className={fieldInput}
+                    placeholder="Olivia George"
+                    autoComplete="name"
+                    autoCapitalize="words"
+                    enterKeyHint="next"
+                    required
+                  />
+                </label>
 
-            {/* Social Links */}
-            <div className="flex gap-4">
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-purple-300 transition-colors duration-300"
-                aria-label="Twitter"
+                <label className={cell}>
+                  <span className={fieldLabel}>{t.contact.email} *</span>
+                  <input
+                    name="email"
+                    type="email"
+                    inputMode="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className={fieldInput}
+                    placeholder="olivia@company.com"
+                    autoComplete="email"
+                    autoCapitalize="off"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    enterKeyHint="next"
+                    required
+                  />
+                </label>
+              </div>
+
+              {/* Job Title & Company Row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 divide-y-2 md:divide-y-0 md:divide-x-2 divide-black dark:divide-gray-700 border-t-2 border-black dark:border-gray-700">
+                <label className={cell}>
+                  <span className={fieldLabel}>{t.contact.jobTitle}</span>
+                  <input
+                    name="jobTitle"
+                    value={formData.jobTitle}
+                    onChange={handleInputChange}
+                    className={fieldInput}
+                    placeholder="Business person"
+                    autoComplete="organization-title"
+                    autoCapitalize="words"
+                    enterKeyHint="next"
+                  />
+                </label>
+
+                <label className={cell}>
+                  <span className={fieldLabel}>{t.contact.company}</span>
+                  <input
+                    name="company"
+                    value={formData.company}
+                    onChange={handleInputChange}
+                    className={fieldInput}
+                    placeholder="Your Company"
+                    autoComplete="organization"
+                    autoCapitalize="words"
+                    enterKeyHint="next"
+                  />
+                </label>
+              </div>
+
+              {/* Subject with Checkboxes */}
+              <div
+                className="p-4 sm:p-6 border-t-2 border-black dark:border-gray-700"
+                role="group"
+                aria-labelledby={`${uid}-subject-label`}
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-purple-300 transition-colors duration-300"
-                aria-label="Instagram"
+                <span id={`${uid}-subject-label`} className={fieldLabel}>
+                  {t.contact.subject} *
+                </span>
+
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    aria-expanded={isDropdownOpen}
+                    aria-controls={`${uid}-subject-list`}
+                    className="w-full min-h-[3rem] px-4 py-3 flex items-center justify-between gap-3 bg-white dark:bg-gray-700 text-black dark:text-white rounded-none"
+                  >
+                    <span className="text-left">
+                      {t.contact.selectSubjects}
+                    </span>
+                    <svg
+                      className={`w-4 h-4 shrink-0 transition-transform ${
+                        isDropdownOpen ? 'rotate-180' : ''
+                      }`}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      aria-hidden="true"
+                    >
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </button>
+
+                  {isDropdownOpen && (
+                    <div
+                      id={`${uid}-subject-list`}
+                      className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border-2 border-black dark:border-gray-600"
+                    >
+                      {subjects.map((subject) => (
+                        // A real <label>: the whole row toggles the checkbox, and it works from the keyboard too
+                        <label
+                          key={subject.value}
+                          className="flex min-h-[3rem] items-center gap-3 px-4 py-3 cursor-pointer active:bg-gray-100 md:hover:bg-gray-100 dark:active:bg-gray-600 dark:md:hover:bg-gray-600"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedSubjects.includes(subject.value)}
+                            onChange={() => toggleSubject(subject.value)}
+                            className="w-5 h-5 shrink-0 border-2 border-black dark:border-gray-400 cursor-pointer"
+                          />
+                          <span className="text-base text-black dark:text-white">
+                            {subject.label}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Selected Tags */}
+                {selectedSubjects.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {selectedSubjects.map((value) => {
+                      const label = subjects.find(
+                        (s) => s.value === value,
+                      )?.label
+                      return (
+                        <span
+                          key={value}
+                          className="flex items-center gap-1 pl-3 border border-black dark:border-gray-500 text-sm bg-gray-50 dark:bg-gray-700 text-black dark:text-white"
+                        >
+                          {label}
+                          <button
+                            type="button"
+                            onClick={() => toggleSubject(value)}
+                            aria-label={`${t.contact.remove ?? 'Remove'} ${label}`}
+                            className="flex h-9 w-9 items-center justify-center font-bold leading-none active:text-red-500 md:hover:text-red-500 dark:active:text-red-400 dark:md:hover:text-red-400"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Message */}
+              <label
+                className={`${cell} border-t-2 border-black dark:border-gray-700`}
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
+                <span className={fieldLabel}>{t.contact.message} *</span>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  rows={5}
+                  className={`${fieldInput} resize-none`}
+                  placeholder=""
+                  autoCapitalize="sentences"
+                  required
+                />
+              </label>
+
+              {/* Status Messages */}
+              {status.error && (
+                <div
+                  role="alert"
+                  className="px-4 py-3 sm:px-6 bg-red-50 dark:bg-red-900 dark:bg-opacity-30 border-t-2 border-black dark:border-gray-700 text-red-600 dark:text-red-400"
                 >
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                </svg>
-              </a>
-              <a
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-purple-300 transition-colors duration-300"
-                aria-label="LinkedIn"
+                  {status.error}
+                </div>
+              )}
+              {status.success && (
+                <div
+                  role="status"
+                  className="px-4 py-3 sm:px-6 bg-green-50 dark:bg-green-900 dark:bg-opacity-30 border-t-2 border-black dark:border-gray-700 text-green-600 dark:text-green-400"
+                >
+                  {t.contact.success}
+                </div>
+              )}
+
+              {/* Submit Button: a real submit, so the keyboard's Go/Enter key works too */}
+              <button
+                type="submit"
+                disabled={status.loading}
+                className="w-full flex items-center justify-between gap-4 p-4 sm:p-6 border-t-2 border-black dark:border-gray-700 text-left active:bg-gray-50 md:hover:bg-gray-50 dark:active:bg-gray-700 dark:md:hover:bg-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed group rounded-none"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                </svg>
-              </a>
-              <a
-                href="https://wa.me/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-purple-300 transition-colors duration-300"
-                aria-label="WhatsApp"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-                </svg>
-              </a>
-            </div>
+                <span className="font-bold text-lg underline text-black dark:text-white group-active:text-orange-500 md:group-hover:text-orange-500 transition">
+                  {status.loading ? t.contact.sending : t.contact.submit}
+                </span>
+
+                <span className="w-11 h-11 sm:w-12 sm:h-12 shrink-0 border-2 border-black dark:border-gray-500 rounded-full flex items-center justify-center group-active:bg-black dark:group-active:bg-white group-active:text-white dark:group-active:text-black md:group-hover:bg-black dark:md:group-hover:bg-white md:group-hover:text-white dark:md:group-hover:text-black transition">
+                  <svg
+                    className="w-5 h-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    aria-hidden="true"
+                  >
+                    <path d="M5 12h14" />
+                    <path d="M13 5l7 7-7 7" />
+                  </svg>
+                </span>
+              </button>
+            </form>
           </div>
-
-          {/* Middle Section - Quick Links */}
-          <div className="ml-auto">
-            <h4 className="text-xl font-bold mb-4">{t.footer.quickLinks}</h4>
-            <nav aria-label="Footer navigation">
-              <ul className="space-y-2">
-                <li>
-                  <a
-                    href="#about"
-                    className="hover:text-purple-300 transition-colors duration-300"
-                  >
-                    {t.nav.about}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#projects"
-                    className="hover:text-purple-300 transition-colors duration-300"
-                  >
-                    {t.nav.projects}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#contact"
-                    className="hover:text-purple-300 transition-colors duration-300"
-                  >
-                    {t.nav.contact}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#blog"
-                    className="hover:text-purple-300 transition-colors duration-300"
-                  >
-                    {t.nav.blog}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/sitemap.xml"
-                    className="hover:text-purple-300 transition-colors duration-300"
-                  >
-                    Sitemap
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-
-          {/* Right Section - Additional Info */}
-          {/* <div className="text-right">
-            <p className="text-sm text-gray-400 mb-2">
-              {currentYear} Abraham Aiyedogbon
-            </p>
-            <p className="text-sm text-gray-400">All rights reserved</p>
-          </div> */}
         </div>
       </div>
-    </footer>
+    </section>
   )
 }

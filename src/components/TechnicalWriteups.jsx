@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
 import { translations } from '../data/translations'
@@ -71,6 +71,9 @@ const TechnicalWriteups = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
+  const [canAutoplay, setCanAutoplay] = useState(false)
+  const [inView, setInView] = useState(false)
+  const sectionRef = useRef(null)
   const scrollContainerRef = useRef(null)
 
   useEffect(() => {
@@ -127,6 +130,36 @@ const TechnicalWriteups = () => {
     fetchArticles()
   }, [])
 
+  // Auto-advance only for mouse users who haven't asked for reduced motion.
+  // On touch screens people swipe, and a carousel that moves on its own fights their thumb.
+  useEffect(() => {
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)')
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const update = () =>
+      setCanAutoplay(finePointer.matches && !reducedMotion.matches)
+
+    update()
+    finePointer.addEventListener('change', update)
+    reducedMotion.addEventListener('change', update)
+    return () => {
+      finePointer.removeEventListener('change', update)
+      reducedMotion.removeEventListener('change', update)
+    }
+  }, [])
+
+  // ...and only while the section is actually on screen
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section) return undefined
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.2 },
+    )
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
   const tabs = [
     { id: 'all', label: copy.tabs?.all || 'All' },
     { id: 'medium', label: copy.tabs?.medium || 'Medium' },
@@ -138,7 +171,7 @@ const TechnicalWriteups = () => {
     return articles.filter((article) => article.sourceKey === activeTab)
   }, [activeTab, articles])
 
-  const scrollArticles = (direction) => {
+  const scrollArticles = useCallback((direction) => {
     const container = scrollContainerRef.current
     if (!container) return
 
@@ -151,17 +184,22 @@ const TechnicalWriteups = () => {
       left: direction === 'next' ? cardWidth + gap : -(cardWidth + gap),
       behavior: 'smooth',
     })
-  }
+  }, [])
 
   const handleManualScroll = (direction) => {
     setAutoScrollEnabled(false)
     scrollArticles(direction)
   }
 
+  // Any touch, scroll or keyboard focus on the carousel means the visitor is in control
+  const stopAutoplay = () => setAutoScrollEnabled(false)
+
   useEffect(() => {
     const container = scrollContainerRef.current
     if (
       !container ||
+      !canAutoplay ||
+      !inView ||
       !autoScrollEnabled ||
       loading ||
       filteredArticles.length <= 1
@@ -181,10 +219,19 @@ const TechnicalWriteups = () => {
     }, 4500)
 
     return () => window.clearInterval(interval)
-  }, [autoScrollEnabled, filteredArticles, loading])
+  }, [
+    autoScrollEnabled,
+    canAutoplay,
+    filteredArticles,
+    inView,
+    loading,
+    scrollArticles,
+  ])
 
+  // New tab = start from the first card (the scroll position used to carry over)
   useEffect(() => {
     setAutoScrollEnabled(true)
+    scrollContainerRef.current?.scrollTo({ left: 0, behavior: 'instant' })
   }, [activeTab])
 
   const formatDate = (date) =>
@@ -196,24 +243,26 @@ const TechnicalWriteups = () => {
 
   return (
     <section
+      ref={sectionRef}
       id="blog"
-      className="relative left-1/2 w-screen -translate-x-1/2 px-4 py-20 text-left text-[#101828] md:px-8 lg:px-16"
+      className="relative left-1/2 w-screen -translate-x-1/2 overflow-x-clip px-5 py-14 text-left text-[#101828] sm:px-6 md:px-8 md:py-20 lg:px-16"
       aria-label="Technical writeups and blog articles section"
     >
       <div className="w-full">
         {/* <p className="mb-3 text-sm font-medium uppercase tracking-widest text-[#878787]">
           {copy.newsroom || 'Technical Writeups'}
         </p> */}
-        <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <h2 className="text-4xl font-medium leading-tight text-[#101828] md:text-5xl">
+        {/* Title and arrows share one row at every width */}
+        <div className="mb-6 flex items-end justify-between gap-4 md:mb-8 md:gap-6">
+          <h2 className="min-w-0 text-4xl font-bold leading-tight text-[#101828] md:text-5xl">
             {copy.latestNews || 'Technical Writeups'}
           </h2>
 
-          <div className="flex gap-3">
+          <div className="flex shrink-0 gap-2.5 md:gap-3">
             <button
               type="button"
               onClick={() => handleManualScroll('prev')}
-              className="flex h-12 w-12 items-center justify-center rounded-full border-0 bg-white p-0 text-[#101828] shadow-sm transition-colors duration-200 hover:bg-[#e9eaef]"
+              className="flex h-11 w-11 items-center justify-center rounded-full border-0 bg-white p-0 text-[#101828] shadow-sm transition-colors duration-200 active:bg-[#e9eaef] sm:h-12 sm:w-12 md:hover:bg-[#e9eaef]"
               aria-label="Scroll articles left"
             >
               <ArrowLeft className="h-5 w-5" aria-hidden="true" />
@@ -221,7 +270,7 @@ const TechnicalWriteups = () => {
             <button
               type="button"
               onClick={() => handleManualScroll('next')}
-              className="flex h-12 w-12 items-center justify-center rounded-full border-0 bg-white p-0 text-[#101828] shadow-sm transition-colors duration-200 hover:bg-[#e9eaef]"
+              className="flex h-11 w-11 items-center justify-center rounded-full border-0 bg-white p-0 text-[#101828] shadow-sm transition-colors duration-200 active:bg-[#e9eaef] sm:h-12 sm:w-12 md:hover:bg-[#e9eaef]"
               aria-label="Scroll articles right"
             >
               <ArrowRight className="h-5 w-5" aria-hidden="true" />
@@ -230,7 +279,7 @@ const TechnicalWriteups = () => {
         </div>
 
         <div
-          className="mb-8 flex gap-3 overflow-x-auto rounded-full bg-[#fef1e7] p-2"
+          className="mb-6 flex gap-1.5 overflow-x-auto rounded-full bg-[#fef1e7] p-1.5 md:mb-8 md:gap-3 md:p-2 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
           role="tablist"
           aria-label="Filter technical writeups"
         >
@@ -244,10 +293,10 @@ const TechnicalWriteups = () => {
                 role="tab"
                 aria-selected={isActive}
                 onClick={() => setActiveTab(tab.id)}
-                className={`min-w-fit rounded-full border-0 px-6 py-3 text-sm font-medium transition-colors duration-200 md:px-8 ${
+                className={`min-w-fit flex-1 rounded-full border-0 px-4 py-3 text-sm font-medium transition-colors duration-200 md:flex-none md:px-8 ${
                   isActive
                     ? 'bg-white text-[#101828] shadow-sm'
-                    : 'bg-transparent text-[#101828] hover:bg-white/70'
+                    : 'bg-transparent text-[#101828] active:bg-white/70 md:hover:bg-white/70'
                 }`}
               >
                 {tab.label}
@@ -257,13 +306,13 @@ const TechnicalWriteups = () => {
         </div>
 
         {loading && (
-          <div className="flex items-center justify-center py-20">
+          <div className="flex items-center justify-center py-14 md:py-20">
             <div className="h-12 w-12 animate-spin rounded-full border-2 border-[#df3e1d] border-t-transparent" />
           </div>
         )}
 
         {error && !loading && (
-          <div className="mb-8 border border-[#df3e1d]/30 bg-white p-5 text-sm text-[#9f2c15] shadow-sm">
+          <div className="mb-8 break-words border border-[#df3e1d]/30 bg-white p-5 text-sm text-[#9f2c15] shadow-sm">
             <p className="font-semibold">
               {copy.errorFetching || 'Error fetching articles:'}
             </p>
@@ -280,7 +329,10 @@ const TechnicalWriteups = () => {
         {!loading && filteredArticles.length > 0 && (
           <div
             ref={scrollContainerRef}
-            className="flex w-full snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-6 [&::-webkit-scrollbar]:hidden"
+            onPointerDown={stopAutoplay}
+            onWheel={stopAutoplay}
+            onFocus={stopAutoplay}
+            className="flex w-full snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain scroll-smooth pb-6 [&::-webkit-scrollbar]:hidden"
             style={{
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
@@ -289,24 +341,33 @@ const TechnicalWriteups = () => {
             {filteredArticles.map((article) => (
               <article
                 key={article.id}
-                className="group flex min-h-[520px] w-full shrink-0 snap-start flex-col bg-white shadow-[0_12px_28px_rgba(16,24,40,0.14)] transition-transform duration-300 hover:-translate-y-1 sm:w-[calc((100%_-_1.5rem)/2)] lg:w-[calc((100%_-_4.5rem)/4)]"
+                className="group flex min-h-[440px] w-full shrink-0 snap-start snap-always flex-col bg-white shadow-[0_6px_16px_rgba(16,24,40,0.12)] transition-transform duration-300 sm:min-h-[520px] sm:w-[calc((100%_-_1.5rem)/2)] sm:shadow-[0_12px_28px_rgba(16,24,40,0.14)] md:hover:-translate-y-1 lg:w-[calc((100%_-_4.5rem)/4)]"
               >
+                {/* Decorative duplicate of the "Read more" link: skipped by keyboard and screen readers */}
                 <a
                   href={article.link}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block overflow-hidden"
-                  aria-label={`Read article: ${article.title}`}
+                  tabIndex={-1}
+                  aria-hidden="true"
                 >
                   <img
                     src={article.imageUrl}
                     alt=""
-                    className="aspect-[4/3] w-full object-full transition-transform duration-300 group-hover:scale-105"
+                    className="aspect-[4/3] w-full object-cover transition-transform duration-300 md:group-hover:scale-105"
                     loading="lazy"
+                    decoding="async"
+                    onError={(event) => {
+                      const fallback = fallbackImages[article.sourceKey]
+                      if (event.currentTarget.src !== fallback) {
+                        event.currentTarget.src = fallback
+                      }
+                    }}
                   />
                 </a>
 
-                <div className="flex flex-1 flex-col p-6">
+                <div className="flex flex-1 flex-col p-5 sm:p-6">
                   {/* <p className="mb-3 text-sm text-[#8d929a]">
                     <span className="font-bold uppercase text-[#8d929a]">
                       {article.source}
@@ -322,17 +383,17 @@ const TechnicalWriteups = () => {
                     {formatDate(article.pubDate)}
                   </time> */}
 
-                  <h3 className="text-xl font-medium leading-snug text-[#101828]">
+                  <h3 className="line-clamp-4 text-lg font-medium leading-snug text-[#101828] sm:text-xl">
                     {article.title}
                   </h3>
 
-                  <div className="mt-4 h-px w-full bg-[#d2d5da]" />
+                  <div className="my-4 h-px w-full bg-[#d2d5da]" />
 
                   <a
                     href={article.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-auto flex items-center justify-between gap-4 rounded-full bg-[#fc9c4d] px-5 py-3 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#fdcba2]"
+                    className="mt-auto flex items-center justify-between gap-4 rounded-full bg-[#fbaf78] px-5 py-3 text-sm font-bold text-black transition-colors duration-200 active:bg-[#fdcba2] md:hover:bg-[#fdcba2]"
                     aria-label={`Read more: ${article.title}`}
                   >
                     <span>{copy.readMore || 'Read more'}</span>

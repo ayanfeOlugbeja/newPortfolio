@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Menu, X, ChevronDown, Globe } from 'lucide-react'
+import React, { useEffect, useRef, useState } from 'react'
+import { Menu, X, Globe } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
 import { translations } from '../data/translations'
 
@@ -7,6 +7,9 @@ export default function Topbar() {
   const { language, toggleLanguage } = useLanguage()
   const t = translations[language]
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const openButtonRef = useRef(null)
+  const closeButtonRef = useRef(null)
 
   const closeMenu = () => setIsMenuOpen(false)
 
@@ -18,81 +21,128 @@ export default function Topbar() {
     { href: '#contact', label: t.nav.contact },
   ]
 
+  // While the menu is open: stop the page scrolling behind it, close on Escape,
+  // and move focus into the menu. On close, hand focus back to the menu button.
+  useEffect(() => {
+    if (!isMenuOpen) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setIsMenuOpen(false)
+    }
+    document.addEventListener('keydown', onKeyDown)
+    closeButtonRef.current?.focus()
+
+    const openButton = openButtonRef.current
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', onKeyDown)
+      openButton?.focus({ preventScroll: true })
+    }
+  }, [isMenuOpen])
+
+  // Shared look for the round buttons so the open and close buttons sit in the same spot
+  const roundButton =
+    'flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-black shadow-lg transition-transform duration-300 active:scale-95'
+
   return (
     <>
-      {/* Closed State Header */}
-      <header className="bg-transparent absolute top-0 left-0 right-0 z-50 flex items-center justify-between py-6 px-6 md:px-8 lg:px-12">
-        {/* Language Switcher - Far Left */}
+      {/* Header: fixed so the menu is always reachable, and padded for phone notches */}
+      <header
+        className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-5 md:px-8 lg:px-12"
+        style={{
+          paddingTop: 'max(1rem, env(safe-area-inset-top))',
+          paddingLeft: 'max(1.25rem, env(safe-area-inset-left))',
+          paddingRight: 'max(1.25rem, env(safe-area-inset-right))',
+        }}
+      >
         <button
           onClick={toggleLanguage}
           aria-label="Toggle language between English and French"
-          className="flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-300 hover:scale-105 bg-gray-100 dark:bg-gray-100 text-black dark:text-black shadow-lg hover:shadow-xl"
+          className="flex h-12 items-center gap-2 rounded-full bg-gray-100 px-5 text-sm font-semibold text-black shadow-lg transition-transform duration-300 active:scale-95 md:hover:scale-105"
         >
-          <Globe className="w-4 h-4" />
+          <Globe className="h-4 w-4" />
           <span>{language === 'en' ? 'FR' : 'EN'}</span>
         </button>
 
-        {/* Hamburger Menu - Far Right */}
         <button
+          ref={openButtonRef}
           onClick={() => setIsMenuOpen(true)}
           aria-label="Open navigation menu"
-          className="p-3 rounded-full transition-all duration-300 bg-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-110"
+          aria-expanded={isMenuOpen}
+          aria-controls="mobile-menu"
+          className={roundButton}
         >
-          <Menu
-            className="w-7 h-7 text-black dark:text-white"
-            strokeWidth={2}
-          />
+          <Menu className="h-6 w-6" strokeWidth={2} />
         </button>
       </header>
 
-      {/* Full-Page Menu Overlay */}
+      {/* Full-page menu */}
       <div
-        className={`fixed inset-0 bg-white dark:bg-black z-[100] transition-all duration-500 ${
-          isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+        id="mobile-menu"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation menu"
+        className={`fixed inset-0 z-[100] bg-white transition-opacity duration-500 dark:bg-black motion-reduce:transition-none ${
+          isMenuOpen ? 'visible opacity-100' : 'invisible opacity-0'
         }`}
+        style={{ height: '100dvh' }}
       >
-        <div className="w-full h-full flex flex-col items-center justify-center px-6 relative">
-          {/* Close Button (X) - Top Right */}
-          <button
-            onClick={closeMenu}
-            aria-label="Close navigation menu"
-            className="absolute top-6 right-6 md:top-8 md:right-8 p-3 rounded-full transition-all duration-300 bg-gray-100 hover:bg-gray-100 dark:hover:bg-gray-900 hover:rotate-90"
-          >
-            <X
-              className="w-8 h-8 md:w-10 md:h-10 text-black dark:text-white"
-              strokeWidth={2}
-            />
-          </button>
+        {/* Close button sits exactly where the open button was */}
+        <button
+          ref={closeButtonRef}
+          onClick={closeMenu}
+          aria-label="Close navigation menu"
+          className={`${roundButton} absolute right-5 md:right-8 lg:right-12 dark:bg-gray-800 dark:text-white`}
+          style={{ top: 'max(1rem, env(safe-area-inset-top))' }}
+        >
+          <X className="h-6 w-6" strokeWidth={2} />
+        </button>
 
-          {/* Menu Links */}
-          <nav aria-label="Primary navigation" className="w-full max-w-4xl">
-            <ul className="flex flex-col gap-6 md:gap-8 lg:gap-10 items-center justify-center">
+        <div
+          className="flex h-full flex-col justify-center px-6"
+          style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+        >
+          <nav
+            aria-label="Primary navigation"
+            className="mx-auto w-full max-w-4xl"
+          >
+            <ul className="flex flex-col items-center">
               {navigationLinks.map((link, index) => (
                 <li
                   key={link.href}
-                  className={`w-full transition-all duration-500 ${
+                  className={`w-full transition-all duration-500 motion-reduce:transition-none ${
                     isMenuOpen
-                      ? 'opacity-100 translate-y-0'
-                      : 'opacity-0 -translate-y-5'
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-5 opacity-0'
                   }`}
                   style={{
-                    transitionDelay: isMenuOpen ? `${index * 100}ms` : '0ms',
+                    transitionDelay: isMenuOpen ? `${index * 80}ms` : '0ms',
                   }}
                 >
+                  {/* Big tap area: the whole row is the link */}
                   <a
                     href={link.href}
                     onClick={closeMenu}
-                    aria-label={link.label}
-                    className="group flex items-center justify-center gap-4 md:gap-6 text-3xl md:text-5xl lg:text-6xl font-bold text-black dark:text-white transition-all duration-300 hover:tracking-wider"
+                    className="block py-3 text-center text-[clamp(2.5rem,12vw,4.5rem)] font-bold leading-tight tracking-tighter text-black transition-opacity active:opacity-50 dark:text-white md:hover:opacity-60"
                   >
-                    <span className="transition-all duration-300 group-hover:scale-110">
-                      {link.label}
-                    </span>
+                    {link.label}
                   </a>
                 </li>
               ))}
             </ul>
           </nav>
+
+          {/* The language switch is covered by the menu, so offer it here too */}
+          <button
+            onClick={toggleLanguage}
+            className="mx-auto mt-10 flex h-12 items-center gap-2 rounded-full bg-gray-100 px-6 text-sm font-semibold text-black active:scale-95 dark:bg-gray-800 dark:text-white"
+          >
+            <Globe className="h-4 w-4" />
+            {language === 'en' ? 'Français' : 'English'}
+          </button>
         </div>
       </div>
     </>

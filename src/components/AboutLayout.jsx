@@ -34,27 +34,28 @@ export default function AboutLayout({
               {title}
             </h2> */}
             {/* Main Description */}
-            <p className="mb-6 text-base leading-relaxed text-gray-600 dark:text-gray-400">
+            {/* Lead statement: the one thing people should read first */}
+            <p className="mb-6 text-balance text-[1.375rem] font-medium leading-snug tracking-tight text-black dark:text-white md:text-2xl lg:text-3xl">
               {description}
             </p>
 
-            {/* Details */}
-            <div className="mb-8 space-y-4">
+            {/* Supporting details */}
+            <div className="mb-8 max-w-prose space-y-4">
               {details.map((detail, index) => (
                 <p
                   key={index}
-                  className="text-base leading-relaxed text-gray-700 dark:text-gray-300"
+                  className="text-[1.0625rem] leading-[1.65] text-gray-600 dark:text-gray-300 md:text-lg"
                 >
                   {detail}
                 </p>
               ))}
             </div>
 
-            {/* CTA Link */}
+            {/* CTA: bigger tap target */}
             {cta && (
               <a
                 href={cta.href}
-                className="text-black dark:text-white font-medium hover:opacity-70 transition-opacity underline"
+                className="inline-flex min-h-12 items-center text-lg font-medium text-black underline underline-offset-4 transition-opacity active:opacity-50 dark:text-white md:hover:opacity-70"
               >
                 {cta.text} →
               </a>
@@ -68,7 +69,7 @@ export default function AboutLayout({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.25 }}
               transition={{ duration: 0.8, delay: 0.12, ease: 'easeOut' }}
-              className="w-full"
+              className="order-first lg:order-none w-full"
             >
               <img
                 src={image.src}
@@ -79,8 +80,6 @@ export default function AboutLayout({
           )}
         </div>
 
-        {/* Divider */}
-        {/* <Divider className="mt-16" /> */}
         <DareToDream />
       </div>
     </section>

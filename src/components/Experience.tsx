@@ -5,6 +5,7 @@ import type { CSSProperties } from 'react'
 import { chapters as defaultChapters } from './timelineData'
 import type { Chapter, ChapterType } from './timelineData'
 import './ExperienceTimeline.css'
+import Divider from './Divider'
 
 interface ExperienceTimelineProps {
   chapters?: Chapter[]
@@ -342,6 +343,7 @@ export default function ExperienceTimeline({
           </div>
         </div>
       </div>
+      <Divider />
     </section>
   )
 }

@@ -20,11 +20,11 @@ function App() {
         {/* Main content sections */}
         <main role="main" className="w-full">
           <About />
-          <ExperienceMarquee />
+
           <SkillsShowcase />
 
           <Projects />
-
+          <ExperienceMarquee />
           <TechnicalWriteups />
           <ContactForm />
         </main>

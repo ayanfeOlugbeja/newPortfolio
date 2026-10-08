@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react'
 import dividerimage from '../assets/images/dividerimage.jpg'
+
 const BASE_SPEED = 60 // px per second when idle
 const SCROLL_BOOST = 0.9 // how strongly scroll velocity speeds the text up
+const MAX_BOOST = 900 // cap so a fast thumb flick doesn't make the text a blur
 
 function MarqueeRow({ text, color, direction, rowRef }) {
   // Repeat the phrase so the row is always wider than the screen
@@ -28,6 +30,8 @@ export default function DareToDream() {
       '(prefers-reduced-motion: reduce)',
     ).matches
 
+    const phone = window.matchMedia('(max-width: 640px)')
+
     const rows = [
       { el: rowA.current, dir: -1, offset: 0 }, // moves left
       { el: rowB.current, dir: 1, offset: 0 }, // moves right
@@ -42,6 +46,12 @@ export default function DareToDream() {
       const dt = Math.min((now - lastT) / 1000, 0.05)
       lastT = now
 
+      // the text is hidden on phones, so don't spend battery animating it
+      if (phone.matches) {
+        raf = requestAnimationFrame(tick)
+        return
+      }
+
       const y = window.scrollY
       const instant = dt > 0 ? Math.abs(y - lastY) / dt : 0
       lastY = y
@@ -49,7 +59,8 @@ export default function DareToDream() {
       // ease toward the current scroll speed so changes feel smooth
       velocity += (instant - velocity) * 0.12
 
-      const speed = reduced ? 0 : BASE_SPEED + velocity * SCROLL_BOOST
+      const boost = Math.min(velocity * SCROLL_BOOST, MAX_BOOST)
+      const speed = reduced ? 0 : BASE_SPEED + boost
 
       rows.forEach((r) => {
         if (!r.el) return
@@ -77,7 +88,6 @@ export default function DareToDream() {
     <>
       <style>{css}</style>
 
-      {/* Tall page so there is room to scroll */}
       <main className="dtd-page">
         <section className="dtd-stage">
           <div className="dtd-text">
@@ -106,13 +116,18 @@ export default function DareToDream() {
 
 const css = `
   .dtd-page {
+    position: relative;
+    left: 50%;
+    width: 100vw;
+    min-width: 100vw;
+    transform: translateX(-50%);
     background: #ffffff;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   }
 
   .dtd-stage {
     position: relative;
-    height: 100vh;
+    min-height: 100vh;
     overflow: hidden;
     display: grid;
     place-items: center;
@@ -165,9 +180,25 @@ const css = `
     display: block;
   }
 
-
-
+  /* Phones: just the picture, edge to edge */
   @media (max-width: 640px) {
-    .dtd-frame { width: 88vw; }
+    .dtd-page {
+      margin-top: 1.5rem;
+    }
+
+    .dtd-stage {
+      min-height: 0;
+      display: block;
+    }
+
+    .dtd-text {
+      display: none;
+    }
+
+    .dtd-frame {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      box-shadow: none;
+    }
   }
 `
