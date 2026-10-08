@@ -1,6 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import Divider from './Divider'
+import DareToDream from './DaretoDream'
+// import Divider from './Divider'
 
 const MotionDiv = motion.div
 
@@ -79,7 +80,8 @@ export default function AboutLayout({
         </div>
 
         {/* Divider */}
-        <Divider className="mt-16" />
+        {/* <Divider className="mt-16" /> */}
+        <DareToDream />
       </div>
     </section>
   )

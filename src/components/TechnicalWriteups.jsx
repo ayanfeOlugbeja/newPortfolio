@@ -230,7 +230,7 @@ const TechnicalWriteups = () => {
         </div>
 
         <div
-          className="mb-8 flex gap-3 overflow-x-auto rounded-full bg-[#e9eaef] p-2"
+          className="mb-8 flex gap-3 overflow-x-auto rounded-full bg-[#fef1e7] p-2"
           role="tablist"
           aria-label="Filter technical writeups"
         >
@@ -307,20 +307,20 @@ const TechnicalWriteups = () => {
                 </a>
 
                 <div className="flex flex-1 flex-col p-6">
-                  <p className="mb-3 text-sm text-[#8d929a]">
+                  {/* <p className="mb-3 text-sm text-[#8d929a]">
                     <span className="font-bold uppercase text-[#8d929a]">
                       {article.source}
                     </span>
                     <span className="mx-1">|</span>
                     <span>{article.category}</span>
-                  </p>
+                  </p> */}
 
-                  <time
+                  {/* <time
                     dateTime={article.pubDate.toISOString()}
                     className="mb-2 text-base font-semibold text-[#101828]"
                   >
                     {formatDate(article.pubDate)}
-                  </time>
+                  </time> */}
 
                   <h3 className="text-xl font-medium leading-snug text-[#101828]">
                     {article.title}
@@ -332,7 +332,7 @@ const TechnicalWriteups = () => {
                     href={article.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-auto flex items-center justify-between gap-4 rounded-full bg-[#df3e1d] px-5 py-3 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#bd3216]"
+                    className="mt-auto flex items-center justify-between gap-4 rounded-full bg-[#fc9c4d] px-5 py-3 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#fdcba2]"
                     aria-label={`Read more: ${article.title}`}
                   >
                     <span>{copy.readMore || 'Read more'}</span>

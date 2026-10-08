@@ -9,7 +9,7 @@ import Projects from './components/Projects'
 import TechnicalWriteups from './components/TechnicalWriteups'
 import ContactForm from './components/ContactForm'
 import Footer from './components/Footer'
-import ExperienceMarquee from './components/Experience'
+import ExperienceMarquee from './components/Experience.tsx'
 
 function App() {
   return (
@@ -20,8 +20,9 @@ function App() {
         {/* Main content sections */}
         <main role="main" className="w-full">
           <About />
-          <SkillsShowcase />
           <ExperienceMarquee />
+          <SkillsShowcase />
+
           <Projects />
 
           <TechnicalWriteups />
