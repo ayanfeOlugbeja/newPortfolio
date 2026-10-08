@@ -1,10 +1,11 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { chapters as defaultChapters } from './timelineData'
 import type { Chapter, ChapterType } from './timelineData'
 import './ExperienceTimeline.css'
+import './Experiencetimeline.mobile.css' // must come after the main CSS
 import Divider from './Divider'
 
 interface ExperienceTimelineProps {
@@ -97,6 +98,7 @@ export default function ExperienceTimeline({
   const [hoverId, setHoverId] = useState<string | null>(null)
   // Entry animations run once on load; "swap" animations only after the first click.
   const [interacted, setInteracted] = useState(false)
+  const detailRef = useRef<HTMLDivElement>(null)
 
   if (!model) return null
   const { items, years, pct, nowPct } = model
@@ -110,7 +112,27 @@ export default function ExperienceTimeline({
     items.find((c) => c.id === (hoverId ?? selected.id)) ?? selected
   const previewing = hoverId !== null && hoverId !== selected.id
 
-  const select = (id: string) => {
+  /**
+   * On a phone the detail panel sits below a tall chart, so a tap on a row would
+   * seem to do nothing. Bring the panel into view, but only when it is off screen.
+   */
+  const revealDetail = () => {
+    if (!window.matchMedia('(max-width: 640px)').matches) return
+    const el = detailRef.current
+    if (!el) return
+    if (el.getBoundingClientRect().top > window.innerHeight * 0.75) {
+      const reduce = window.matchMedia(
+        '(prefers-reduced-motion: reduce)',
+      ).matches
+      el.scrollIntoView({
+        behavior: reduce ? 'auto' : 'smooth',
+        block: 'start',
+      })
+    }
+  }
+
+  const select = (id: string, reveal = false) => {
+    if (reveal) revealDetail()
     if (id === selected.id) return
     setInteracted(true)
     setSelectedId(id)
@@ -194,7 +216,10 @@ export default function ExperienceTimeline({
                       animationDelay: `${150 + i * 60}ms`,
                     }}
                   >
-                    {y}
+                    <span className="tl__year-full">{y}</span>
+                    <span className="tl__year-short">
+                      &rsquo;{String(y).slice(-2)}
+                    </span>
                   </span>
                 ))}
               </div>
@@ -212,9 +237,12 @@ export default function ExperienceTimeline({
                   className="tl__row tl__fade"
                   aria-pressed={on}
                   style={{ animationDelay: `${200 + i * 70}ms` }}
-                  onClick={() => select(c.id)}
-                  onMouseEnter={() => setHoverId(c.id)}
-                  onMouseLeave={() => setHoverId(null)}
+                  onClick={() => select(c.id, true)}
+                  // Mouse only: touch taps must not leave a "hover" preview behind
+                  onPointerEnter={(e) => {
+                    if (e.pointerType === 'mouse') setHoverId(c.id)
+                  }}
+                  onPointerLeave={() => setHoverId(null)}
                   onFocus={() => setHoverId(c.id)}
                   onBlur={() => setHoverId(null)}
                 >
@@ -258,6 +286,7 @@ export default function ExperienceTimeline({
         </div>
 
         <div
+          ref={detailRef}
           className="tl__detail tl__rise"
           aria-live="polite"
           style={{ animationDelay: '650ms' }}

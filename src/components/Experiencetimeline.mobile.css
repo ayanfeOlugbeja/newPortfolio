@@ -1,0 +1,195 @@
+/*
+  Mobile and touch layer for ExperienceTimeline.
+  Import this AFTER ExperienceTimeline.css so it can override it.
+  Nothing here changes how the timeline looks above 640px.
+*/
+
+/* ---------- Everywhere ---------- */
+
+.tl__row,
+.tl__nav-btn {
+  touch-action: manipulation; /* no double-tap-to-zoom delay */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tl__row:active {
+  background-color: rgba(17, 17, 17, 0.06);
+}
+
+/* Very short bars (a few months) stay visible and tappable */
+.tl__bar {
+  min-width: 14px;
+}
+
+/* When a row is tapped on a phone the page scrolls here; leave some breathing room */
+.tl__detail {
+  scroll-margin-top: 16px;
+}
+
+/* Short year labels ('20) are only used on very narrow screens */
+.tl__year-short {
+  display: none;
+}
+
+/* ---------- Touch devices: no hover effects that stick after a tap ---------- */
+
+@media (hover: none) {
+  .tl__row:hover {
+    background-color: transparent;
+  }
+  .tl__row:hover .tl__row-name {
+    transform: none;
+  }
+  .tl__row:hover .tl__bar {
+    filter: none;
+    box-shadow: none;
+  }
+  .tl__nav-btn:hover {
+    background-color: #ffffff;
+  }
+}
+
+/* ---------- Phones ---------- */
+
+@media (max-width: 640px) {
+  /* Labels move above their bars, so the bars can use the full chart width */
+  .tl {
+    --tl-label-w: 0px;
+  }
+
+  .tl__inner {
+    gap: 32px;
+  }
+
+  .tl__intro {
+    font-size: 16px;
+  }
+
+  .tl__chart {
+    border-radius: 16px;
+  }
+
+  /* Axis: only the years. The "Chapter" label stays for screen readers. */
+  .tl__axis {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tl__axis-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Rows: name and years on one line, bar underneath */
+  .tl__row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    height: auto;
+    padding: 12px 0 14px;
+  }
+
+  .tl__row-label {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 2px 12px;
+    padding-right: 0;
+  }
+
+  .tl__row-name {
+    font-size: 15px;
+  }
+
+  .tl__row-years {
+    font-size: 13px;
+  }
+
+  .tl__row .tl__track {
+    flex: none;
+    height: 34px;
+  }
+
+  .tl__row .tl__bar {
+    top: 2px;
+  }
+
+  /* Keep the "Now" pill inside the chart: it sits to the left of the line */
+  .tl__now-pill {
+    transform: translateX(calc(-100% + 10px));
+  }
+
+  /* Detail panel */
+  .tl__detail {
+    padding-top: 28px;
+  }
+
+  .tl__detail-body {
+    gap: 24px;
+  }
+
+  /* Kicker and years on the left, previous/next buttons on the right */
+  .tl__side {
+    flex: 1 1 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 16px;
+    row-gap: 6px;
+    align-items: center;
+  }
+
+  .tl__kicker {
+    grid-column: 1;
+  }
+
+  .tl__detail-years {
+    grid-column: 1;
+    font-size: 18px;
+  }
+
+  .tl__nav {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    padding-top: 0;
+  }
+
+  .tl__nav-btn {
+    width: 48px;
+    height: 48px;
+  }
+
+  .tl__main {
+    flex: 1 1 100%;
+    gap: 16px;
+  }
+
+  .tl__detail-title {
+    font-size: clamp(30px, 9vw, 40px);
+    overflow-wrap: break-word;
+  }
+
+  .tl__desc {
+    font-size: 16px;
+  }
+
+  .tl__tag {
+    padding: 8px 14px;
+  }
+}
+
+/* ---------- Very narrow phones: shorten the year labels ---------- */
+
+@media (max-width: 400px) {
+  .tl__year-full {
+    display: none;
+  }
+
+  .tl__year-short {
+    display: inline;
+  }
+}
