@@ -2,6 +2,7 @@ import React from 'react'
 import { useLanguage } from '../context/LanguageContext'
 import { translations } from '../data/translations'
 import AboutLayout from './AboutLayout'
+import heroImage from '../assets/images/Aiyedogbon Abraham.png'
 
 export default function About() {
   const { language } = useLanguage()
@@ -15,6 +16,10 @@ export default function About() {
     cta: {
       text: t.about.learnMore || 'Learn more about my journey',
       href: '#projects',
+    },
+    image: {
+      src: heroImage,
+      alt: 'Aiyedogbon Abraham',
     },
   }
 

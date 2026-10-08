@@ -1,18 +1,17 @@
 import React from 'react'
-import { HeroGeometric } from './ui/shape-landing-hero'
-import { useLanguage } from '../context/LanguageContext'
-import { translations } from '../data/translations'
+import heroImage from '../assets/images/Aiyedogbon Abraham.png'
 
 export default function HeroSection() {
-  const { language } = useLanguage()
-  const t = translations[language]
-
   return (
-    <HeroGeometric
-      badge={t.hero.badge}
-      title1={t.hero.title1}
-      title2={t.hero.title2}
-      description={t.hero.description}
-    />
+    <section
+      className="w-full bg-white"
+      aria-label="Aiyedogbon Abraham hero section"
+    >
+      <img
+        src={heroImage}
+        alt="Aiyedogbon Abraham"
+        className="block h-auto w-1/3"
+      />
+    </section>
   )
 }

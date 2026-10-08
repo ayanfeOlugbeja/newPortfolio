@@ -211,10 +211,10 @@ export default function Projects() {
 
   return (
     <section id="projects" className="py-16 sm:py-20 bg-white dark:bg-gray-900">
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto px-4">
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10 sm:mb-12">
-          <h2 className="text-3xl sm:text-5xl font-black italic tracking-tight text-black dark:text-white">
+          <h2 className="text-3xl sm:text-5xl font-medium italic tracking-tight text-black dark:text-white">
             {t.projects.title}
           </h2>
 

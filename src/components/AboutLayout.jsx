@@ -1,5 +1,8 @@
-import React from "react";
-import Divider from "./Divider";
+import React from 'react'
+import { motion } from 'framer-motion'
+import Divider from './Divider'
+
+const MotionDiv = motion.div
 
 export default function AboutLayout({
   mission,
@@ -7,37 +10,40 @@ export default function AboutLayout({
   description,
   details,
   cta,
+  image,
 }) {
   return (
-    <section className="py-20 px-4 bg-white dark:bg-gray-900">
-      <div className="container mx-auto max-w-6xl">
+    <section id="about" className="bg-white px-4 pb-20 pt-32 dark:bg-gray-900">
+      <div className="container mx-auto">
         {/* Mission Label */}
-        <p className="text-gray-600 dark:text-gray-400 text-sm font-medium mb-4">
+        {/* <p className="mb-4 text-sm font-medium uppercase tracking-widest text-gray-600 dark:text-gray-400">
           {mission}
-        </p>
+        </p> */}
 
         {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
-          {/* Left Column - Title */}
-          <div>
-            <h2 className="text-5xl lg:text-6xl font-bold leading-tight mb-8 text-black dark:text-white">
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.88fr)] lg:gap-16">
+          {/* Left Column - About Details */}
+          <MotionDiv
+            initial={{ opacity: 0, y: 32 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.7, ease: 'easeOut' }}
+          >
+            {/* <h2 className="mb-8 text-5xl font-bold leading-tight text-black dark:text-white lg:text-6xl">
               {title}
-            </h2>
-          </div>
-
-          {/* Right Column - Description & Details */}
-          <div>
+            </h2> */}
             {/* Main Description */}
-            <p className="text-gray-600 dark:text-gray-400 text-sm mb-6 leading-relaxed">
+            <p className="mb-6 text-base leading-relaxed text-gray-600 dark:text-gray-400">
               {description}
             </p>
 
             {/* Details */}
-            <div className="space-y-4 mb-8">
+            <div className="mb-8 space-y-4">
               {details.map((detail, index) => (
                 <p
                   key={index}
-                  className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                  className="text-base leading-relaxed text-gray-700 dark:text-gray-300"
+                >
                   {detail}
                 </p>
               ))}
@@ -47,16 +53,34 @@ export default function AboutLayout({
             {cta && (
               <a
                 href={cta.href}
-                className="text-black dark:text-white font-medium hover:opacity-70 transition-opacity underline">
+                className="text-black dark:text-white font-medium hover:opacity-70 transition-opacity underline"
+              >
                 {cta.text} →
               </a>
             )}
-          </div>
+          </MotionDiv>
+
+          {/* Right Column - Image */}
+          {image && (
+            <MotionDiv
+              initial={{ opacity: 0, y: 42 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.25 }}
+              transition={{ duration: 0.8, delay: 0.12, ease: 'easeOut' }}
+              className="w-full"
+            >
+              <img
+                src={image.src}
+                alt={image.alt}
+                className="block h-auto w-full object-contain"
+              />
+            </MotionDiv>
+          )}
         </div>
 
         {/* Divider */}
         <Divider className="mt-16" />
       </div>
     </section>
-  );
+  )
 }
