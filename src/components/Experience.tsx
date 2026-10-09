@@ -348,7 +348,10 @@ export default function ExperienceTimeline({
                   {selected.role}
                 </div>
               )}
-              <h3 className={cx('tl__detail-title', 'font-labilGrotesk', sw)} style={delay(100)}>
+              <h3
+                className={cx('tl__detail-title', 'font-labilGrotesk', sw)}
+                style={delay(100)}
+              >
                 {selected.title}
               </h3>
               <p className={cx('tl__desc', sw)} style={delay(170)}>
