@@ -5,12 +5,7 @@ import DareToDream from './DaretoDream'
 
 const MotionDiv = motion.div
 
-export default function AboutLayout({
-  description,
-  details,
-  cta,
-  image,
-}) {
+export default function AboutLayout({ description, details, cta, image }) {
   return (
     <section id="about" className="bg-white px-4 pb-20 pt-32">
       <div className="container mx-auto">
