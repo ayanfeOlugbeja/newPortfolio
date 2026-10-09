@@ -1,11 +1,12 @@
 import React from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
-import { useLanguage } from '../context/LanguageContext'
+import { useLanguage } from '../context/useLanguage'
 import { translations } from '../data/translations'
 import Divider from './Divider'
 
 const ACCENT = '#fbaf78' // pill orange
+const MotionArticle = motion.article
 
 const SkillsShowcase = () => {
   const { language } = useLanguage()
@@ -22,8 +23,9 @@ const SkillsShowcase = () => {
 
   return (
     <section
+      id="skills"
       aria-labelledby="skills-title"
-      className="relative w-full bg-white text-black dark:bg-gray-900 dark:text-white"
+      className="relative w-full bg-white text-black"
     >
       <div className="mx-auto grid w-full max-w-[1840px] grid-cols-1 px-5 sm:px-6 md:grid-cols-[5fr_7fr] md:px-7">
         {/*
@@ -36,18 +38,18 @@ const SkillsShowcase = () => {
             id="skills-title"
             className="order-1 pt-10 pb-2 text-2xl font-bold tracking-tight md:order-none md:pb-0 md:pt-[22vh]"
           >
-            {t.skills.sectionTitle ?? 'My Skills & Expertise'}
+            {t.skills.title}
           </h2>
 
-          <div className="order-3 border-t border-gray-200 py-12 dark:border-gray-800 md:order-none md:border-t-0 md:py-0">
-            <p className="max-w-[16rem] text-sm leading-relaxed text-gray-500 dark:text-gray-400">
-              {t.skills.ctaText ?? 'Have a project in mind?'}
+          <div className="order-3 border-t border-gray-200 py-12 md:order-none md:border-t-0 md:py-0">
+            <p className="max-w-[16rem] text-sm leading-relaxed text-gray-500">
+              {t.skills.ctaText}
             </p>
             <a
               href="#contact"
               className="mt-6 inline-flex items-center gap-3 py-2 text-2xl font-medium tracking-tight transition-opacity active:opacity-60 md:mt-10 md:text-3xl md:hover:opacity-60"
             >
-              {t.skills.ctaLabel ?? 'Contact Me'}
+              {t.skills.ctaLabel}
               <ArrowRight className="h-5 w-5" aria-hidden="true" />
             </a>
           </div>
@@ -56,18 +58,18 @@ const SkillsShowcase = () => {
         {/* RIGHT: lettered service blocks */}
         <div className="order-2 md:order-none md:pb-24">
           {skills.map(({ key, data }, i) => (
-            <motion.article
+            <MotionArticle
               key={key}
               initial={reduceMotion ? false : { opacity: 0, y: 24 }}
               whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
-              className="grid grid-cols-1 items-start gap-3 border-t border-gray-200 py-10 first:border-t-0 dark:border-gray-800 md:min-h-[80vh] md:grid-cols-[6.5rem_1fr] md:gap-2 md:border-t-0 md:py-0 md:pt-[18vh]"
+              className="grid grid-cols-1 items-start gap-3 border-t border-gray-200 py-10 first:border-t-0 md:min-h-[80vh] md:grid-cols-[6.5rem_1fr] md:gap-2 md:border-t-0 md:py-0 md:pt-[18vh]"
             >
               {/* Faint letter marker: sits above the statement on mobile, beside it on desktop */}
               <span
                 aria-hidden="true"
-                className="select-none text-4xl font-bold leading-none tracking-tighter text-gray-300 dark:text-gray-700 md:text-7xl md:text-gray-200"
+                className="select-none text-4xl font-bold leading-none tracking-tighter text-gray-300 md:text-7xl md:text-gray-200"
               >
                 {letter(i)}/
               </span>
@@ -91,7 +93,7 @@ const SkillsShowcase = () => {
                   ))}
                 </ul>
               </div>
-            </motion.article>
+            </MotionArticle>
           ))}
         </div>
       </div>

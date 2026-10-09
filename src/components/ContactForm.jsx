@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useId } from 'react'
-import { useLanguage } from '../context/LanguageContext'
+import { useLanguage } from '../context/useLanguage'
 import { translations } from '../data/translations'
 
 export default function ContactForm() {
@@ -9,13 +9,13 @@ export default function ContactForm() {
 
   const cellInput =
     'w-full bg-transparent text-lg outline-none placeholder-gray-400'
-  const fieldInput = `${cellInput} text-black dark:text-white placeholder-gray-400 dark:placeholder-gray-600`
+  const fieldInput = `${cellInput} text-black placeholder-gray-400`
 
   // Each cell is a <label>: tapping anywhere in it focuses the field, and the
   // cell highlights while focused (the inputs themselves have no outline).
   const cell =
-    'block cursor-text p-4 transition-colors focus-within:bg-gray-50 dark:focus-within:bg-gray-700/40 sm:p-6'
-  const fieldLabel = 'block font-bold mb-2 text-black dark:text-white'
+    'block cursor-text p-4 transition-colors focus-within:bg-gray-50 sm:p-6'
+  const fieldLabel = 'block font-bold mb-2 text-black'
 
   const subjects = [
     { value: 'project', label: t.contact.subjects.project },
@@ -185,17 +185,17 @@ export default function ContactForm() {
       {/* Header Section */}
       <div className="px-5 pt-14 pb-10 sm:px-6 md:px-8 md:pt-20 md:pb-12 lg:px-16">
         <div className="max-w-6xl mx-auto">
-          <h2 className="mb-4 break-words text-4xl font-black italic tracking-tight text-black dark:text-white sm:text-5xl md:mb-6 md:text-7xl lg:text-8xl">
+          <h2 className="mb-4 break-words text-4xl font-black italic tracking-tight text-black sm:text-5xl md:mb-6 md:text-7xl lg:text-8xl">
             {t.contact.title}
           </h2>
-          <p className="text-lg md:text-xl text-black dark:text-white max-w-2xl">
+          <p className="text-lg md:text-xl text-black max-w-2xl">
             {t.contact.subtitle}
           </p>
         </div>
       </div>
 
       {/* Form Section */}
-      <div className="w-full bg-white dark:bg-gray-900 px-5 pb-14 sm:px-6 md:px-8 md:pb-20 lg:px-16">
+      <div className="w-full bg-white px-5 pb-14 sm:px-6 md:px-8 md:pb-20 lg:px-16">
         <div className="max-w-6xl mx-auto">
           {/* The extra padding is only for larger screens: on phones the form gets the full width */}
           <div
@@ -207,10 +207,10 @@ export default function ContactForm() {
               onSubmit={handleSubmit}
               noValidate
               aria-busy={status.loading}
-              className="bg-white dark:bg-gray-800 border-2 border-black dark:border-gray-700 mt-10"
+              className="bg-white border-2 border-black mt-10"
             >
               {/* Name & Email Row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 divide-y-2 md:divide-y-0 md:divide-x-2 divide-black dark:divide-gray-700">
+              <div className="grid grid-cols-1 md:grid-cols-2 divide-y-2 md:divide-y-0 md:divide-x-2 divide-black">
                 <label className={cell}>
                   <span className={fieldLabel}>{t.contact.name} *</span>
                   <input
@@ -247,7 +247,7 @@ export default function ContactForm() {
               </div>
 
               {/* Job Title & Company Row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 divide-y-2 md:divide-y-0 md:divide-x-2 divide-black dark:divide-gray-700 border-t-2 border-black dark:border-gray-700">
+              <div className="grid grid-cols-1 md:grid-cols-2 divide-y-2 md:divide-y-0 md:divide-x-2 divide-black border-t-2 border-black">
                 <label className={cell}>
                   <span className={fieldLabel}>{t.contact.jobTitle}</span>
                   <input
@@ -279,7 +279,7 @@ export default function ContactForm() {
 
               {/* Subject with Checkboxes */}
               <div
-                className="p-4 sm:p-6 border-t-2 border-black dark:border-gray-700"
+                className="p-4 sm:p-6 border-t-2 border-black"
                 role="group"
                 aria-labelledby={`${uid}-subject-label`}
               >
@@ -293,7 +293,7 @@ export default function ContactForm() {
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     aria-expanded={isDropdownOpen}
                     aria-controls={`${uid}-subject-list`}
-                    className="w-full min-h-[3rem] px-4 py-3 flex items-center justify-between gap-3 bg-white dark:bg-gray-700 text-black dark:text-white rounded-none"
+                    className="w-full min-h-[3rem] px-4 py-3 flex items-center justify-between gap-3 bg-white text-black rounded-none"
                   >
                     <span className="text-left">
                       {t.contact.selectSubjects}
@@ -315,21 +315,21 @@ export default function ContactForm() {
                   {isDropdownOpen && (
                     <div
                       id={`${uid}-subject-list`}
-                      className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border-2 border-black dark:border-gray-600"
+                      className="absolute z-10 w-full mt-1 bg-white border-2 border-black"
                     >
                       {subjects.map((subject) => (
                         // A real <label>: the whole row toggles the checkbox, and it works from the keyboard too
                         <label
                           key={subject.value}
-                          className="flex min-h-[3rem] items-center gap-3 px-4 py-3 cursor-pointer active:bg-gray-100 md:hover:bg-gray-100 dark:active:bg-gray-600 dark:md:hover:bg-gray-600"
+                          className="flex min-h-[3rem] items-center gap-3 px-4 py-3 cursor-pointer active:bg-gray-100 md:hover:bg-gray-100"
                         >
                           <input
                             type="checkbox"
                             checked={selectedSubjects.includes(subject.value)}
                             onChange={() => toggleSubject(subject.value)}
-                            className="w-5 h-5 shrink-0 border-2 border-black dark:border-gray-400 cursor-pointer"
+                            className="w-5 h-5 shrink-0 border-2 border-black cursor-pointer"
                           />
-                          <span className="text-base text-black dark:text-white">
+                          <span className="text-base text-black">
                             {subject.label}
                           </span>
                         </label>
@@ -348,14 +348,14 @@ export default function ContactForm() {
                       return (
                         <span
                           key={value}
-                          className="flex items-center gap-1 pl-3 border border-black dark:border-gray-500 text-sm bg-gray-50 dark:bg-gray-700 text-black dark:text-white"
+                          className="flex items-center gap-1 pl-3 border border-black text-sm bg-gray-50 text-black"
                         >
                           {label}
                           <button
                             type="button"
                             onClick={() => toggleSubject(value)}
                             aria-label={`${t.contact.remove ?? 'Remove'} ${label}`}
-                            className="flex h-9 w-9 items-center justify-center font-bold leading-none active:text-red-500 md:hover:text-red-500 dark:active:text-red-400 dark:md:hover:text-red-400"
+                            className="flex h-9 w-9 items-center justify-center font-bold leading-none active:text-red-500 md:hover:text-red-500"
                           >
                             ×
                           </button>
@@ -367,9 +367,7 @@ export default function ContactForm() {
               </div>
 
               {/* Message */}
-              <label
-                className={`${cell} border-t-2 border-black dark:border-gray-700`}
-              >
+              <label className={`${cell} border-t-2 border-black`}>
                 <span className={fieldLabel}>{t.contact.message} *</span>
                 <textarea
                   name="message"
@@ -387,7 +385,7 @@ export default function ContactForm() {
               {status.error && (
                 <div
                   role="alert"
-                  className="px-4 py-3 sm:px-6 bg-red-50 dark:bg-red-900 dark:bg-opacity-30 border-t-2 border-black dark:border-gray-700 text-red-600 dark:text-red-400"
+                  className="px-4 py-3 sm:px-6 bg-red-50 border-t-2 border-black text-red-600"
                 >
                   {status.error}
                 </div>
@@ -395,7 +393,7 @@ export default function ContactForm() {
               {status.success && (
                 <div
                   role="status"
-                  className="px-4 py-3 sm:px-6 bg-green-50 dark:bg-green-900 dark:bg-opacity-30 border-t-2 border-black dark:border-gray-700 text-green-600 dark:text-green-400"
+                  className="px-4 py-3 sm:px-6 bg-green-50 border-t-2 border-black text-green-600"
                 >
                   {t.contact.success}
                 </div>
@@ -405,13 +403,13 @@ export default function ContactForm() {
               <button
                 type="submit"
                 disabled={status.loading}
-                className="w-full flex items-center justify-between gap-4 p-4 sm:p-6 border-t-2 border-black dark:border-gray-700 text-left active:bg-gray-50 md:hover:bg-gray-50 dark:active:bg-gray-700 dark:md:hover:bg-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed group rounded-none"
+                className="w-full flex items-center justify-between gap-4 p-4 sm:p-6 border-t-2 border-black text-left active:bg-gray-50 md:hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed group rounded-none"
               >
-                <span className="font-bold text-lg underline text-black dark:text-white group-active:text-orange-500 md:group-hover:text-orange-500 transition">
+                <span className="font-bold text-lg underline text-black group-active:text-orange-500 md:group-hover:text-orange-500 transition">
                   {status.loading ? t.contact.sending : t.contact.submit}
                 </span>
 
-                <span className="w-11 h-11 sm:w-12 sm:h-12 shrink-0 border-2 border-black dark:border-gray-500 rounded-full flex items-center justify-center group-active:bg-black dark:group-active:bg-white group-active:text-white dark:group-active:text-black md:group-hover:bg-black dark:md:group-hover:bg-white md:group-hover:text-white dark:md:group-hover:text-black transition">
+                <span className="w-11 h-11 sm:w-12 sm:h-12 shrink-0 border-2 border-black rounded-full flex items-center justify-center group-active:bg-black group-active:text-white md:group-hover:bg-black md:group-hover:text-white transition">
                   <svg
                     className="w-5 h-5"
                     viewBox="0 0 24 24"

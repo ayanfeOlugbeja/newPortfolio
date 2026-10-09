@@ -8,6 +8,8 @@ const links = [
   { label: 'Twitter', href: 'https://twitter.com/joshuaAAbraham?s=20' },
   { label: 'Email', href: 'mailto:aiyedogbonabraham@gmail.com' },
 ]
+const MotionList = motion.ul
+const MotionLink = motion.a
 
 export default function Footer() {
   const reduceMotion = useReducedMotion()
@@ -15,13 +17,13 @@ export default function Footer() {
   return (
     <footer
       role="contentinfo"
-      className="grid h-full grid-cols-1 overflow-hidden bg-white text-black dark:bg-gray-900 dark:text-white md:grid-cols-2"
+      className="grid h-full grid-cols-1 overflow-hidden bg-white text-black md:grid-cols-2"
     >
       <nav
         aria-label="Social links"
         className="flex flex-col justify-center px-6 py-8 md:px-10"
       >
-        <motion.ul
+        <MotionList
           className="space-y-1 md:space-y-10"
           initial="hidden"
           whileInView="visible"
@@ -31,7 +33,7 @@ export default function Footer() {
           {links.map((link) => (
             <li key={link.label} className="overflow-hidden pb-[0.1em]">
               {/* Each link rises out from behind its own line, like a mask reveal */}
-              <motion.a
+              <MotionLink
                 href={link.href}
                 target={link.href.startsWith('mailto:') ? undefined : '_blank'}
                 rel="noopener noreferrer"
@@ -43,10 +45,10 @@ export default function Footer() {
                 transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
               >
                 {link.label}
-              </motion.a>
+              </MotionLink>
             </li>
           ))}
-        </motion.ul>
+        </MotionList>
       </nav>
 
       <img

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Menu, X, Globe } from 'lucide-react'
-import { useLanguage } from '../context/LanguageContext'
+import { useLanguage } from '../context/useLanguage'
 import { translations } from '../data/translations'
 
 export default function Topbar() {
@@ -60,7 +60,7 @@ export default function Topbar() {
       >
         <button
           onClick={toggleLanguage}
-          aria-label="Toggle language between English and French"
+          aria-label={t.nav.toggleLanguage}
           className="flex h-12 items-center gap-2 rounded-full bg-gray-100 px-5 text-sm font-semibold text-black shadow-lg transition-transform duration-300 active:scale-95 md:hover:scale-105"
         >
           <Globe className="h-4 w-4" />
@@ -70,7 +70,7 @@ export default function Topbar() {
         <button
           ref={openButtonRef}
           onClick={() => setIsMenuOpen(true)}
-          aria-label="Open navigation menu"
+          aria-label={t.nav.openMenu}
           aria-expanded={isMenuOpen}
           aria-controls="mobile-menu"
           className={roundButton}
@@ -84,8 +84,8 @@ export default function Topbar() {
         id="mobile-menu"
         role="dialog"
         aria-modal="true"
-        aria-label="Navigation menu"
-        className={`fixed inset-0 z-[100] bg-white transition-opacity duration-500 dark:bg-black motion-reduce:transition-none ${
+        aria-label={t.nav.menuLabel}
+        className={`fixed inset-0 z-[100] bg-white transition-opacity duration-500 motion-reduce:transition-none ${
           isMenuOpen ? 'visible opacity-100' : 'invisible opacity-0'
         }`}
         style={{ height: '100dvh' }}
@@ -94,9 +94,12 @@ export default function Topbar() {
         <button
           ref={closeButtonRef}
           onClick={closeMenu}
-          aria-label="Close navigation menu"
-          className={`${roundButton} absolute right-5 md:right-8 lg:right-12 dark:bg-gray-800 dark:text-white`}
-          style={{ top: 'max(1rem, env(safe-area-inset-top))' }}
+          aria-label={t.nav.closeMenu}
+          className={`${roundButton} absolute`}
+          style={{
+            top: 'max(1rem, env(safe-area-inset-top))',
+            right: 'max(1.25rem, env(safe-area-inset-right))',
+          }}
         >
           <X className="h-6 w-6" strokeWidth={2} />
         </button>
@@ -126,7 +129,7 @@ export default function Topbar() {
                   <a
                     href={link.href}
                     onClick={closeMenu}
-                    className="block py-3 text-center text-[clamp(2.5rem,12vw,4.5rem)] font-bold leading-tight tracking-tighter text-black transition-opacity active:opacity-50 dark:text-white md:hover:opacity-60"
+                    className="block py-3 text-center text-[clamp(2.5rem,12vw,4.5rem)] font-bold leading-tight tracking-tighter text-black transition-opacity active:opacity-50 md:hover:opacity-60"
                   >
                     {link.label}
                   </a>
@@ -138,10 +141,10 @@ export default function Topbar() {
           {/* The language switch is covered by the menu, so offer it here too */}
           <button
             onClick={toggleLanguage}
-            className="mx-auto mt-10 flex h-12 items-center gap-2 rounded-full bg-gray-100 px-6 text-sm font-semibold text-black active:scale-95 dark:bg-gray-800 dark:text-white"
+            className="mx-auto mt-10 flex h-12 items-center gap-2 rounded-full bg-gray-100 px-6 text-sm font-semibold text-black active:scale-95"
           >
             <Globe className="h-4 w-4" />
-            {language === 'en' ? 'Français' : 'English'}
+            {t.nav.languageName}
           </button>
         </div>
       </div>

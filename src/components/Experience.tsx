@@ -4,6 +4,10 @@ import { useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { chapters as defaultChapters } from './timelineData'
 import type { Chapter, ChapterType } from './timelineData'
+import { useLanguage } from '../context/useLanguage'
+import type { Language } from '../context/languageContext'
+import { translations } from '../data/translations'
+import { contentTranslations } from '../data/contentTranslations'
 import './ExperienceTimeline.css'
 import './Experiencetimeline.mobile.css' // must come after the main CSS
 import Divider from './Divider'
@@ -14,12 +18,6 @@ interface ExperienceTimelineProps {
   accent?: string
   title?: string
   intro?: string
-}
-
-const KIND_LABEL: Record<ChapterType, string> = {
-  study: 'Education',
-  work: 'Work',
-  cert: 'Certifications',
 }
 
 const cx = (...parts: Array<string | false | null | undefined>) =>
@@ -87,10 +85,27 @@ function ArrowIcon({ direction }: { direction: 'left' | 'right' }) {
 export default function ExperienceTimeline({
   chapters = defaultChapters,
   accent,
-  title = 'Experience Timeline',
-  intro = 'A year-by-year view of the work, education, and professional growth I have been involved in since 2020.',
+  title,
+  intro,
 }: ExperienceTimelineProps) {
-  const model = useMemo(() => buildModel(chapters), [chapters])
+  const { language } = useLanguage() as { language: Language }
+  const copy = translations[language].experience
+  const kindLabel: Record<ChapterType, string> = {
+    study: copy.education,
+    work: copy.work,
+    cert: copy.certification,
+  }
+  const chapterCopy = contentTranslations[language].timeline
+  const model = useMemo(
+    () =>
+      buildModel(
+        chapters.map((chapter) => ({
+          ...chapter,
+          ...chapterCopy[chapter.id],
+        })),
+      ),
+    [chapters, chapterCopy],
+  )
 
   const [selectedId, setSelectedId] = useState<string | undefined>(
     chapters[0]?.id,
@@ -150,18 +165,23 @@ export default function ExperienceTimeline({
   const plotStyle = { '--tl-years': years.length } as CSSProperties
 
   return (
-    <section className="tl" style={rootStyle} aria-labelledby="tl-title">
+    <section
+      className="tl"
+      id="journey"
+      style={rootStyle}
+      aria-labelledby="tl-title"
+    >
       <div className="tl__inner">
         <header className="tl__header">
           <div className="tl__heading">
             <h2 id="tl-title" className="tl__title tl__rise">
-              {title}
+              {title ?? copy.title}
             </h2>
             <p
               className="tl__intro tl__rise"
               style={{ animationDelay: '90ms' }}
             >
-              {intro}
+              {intro ?? copy.intro}
             </p>
           </div>
           <div
@@ -171,7 +191,7 @@ export default function ExperienceTimeline({
             {(['study', 'work', 'cert'] as ChapterType[]).map((type) => (
               <span className="tl__legend-item" key={type}>
                 <span className={cx('tl__swatch', `tl__swatch--${type}`)} />
-                {KIND_LABEL[type]}
+                {kindLabel[type]}
               </span>
             ))}
           </div>
@@ -200,12 +220,12 @@ export default function ExperienceTimeline({
                 style={{ left: `${nowPct}%` }}
               >
                 <span className="tl__now-dot" />
-                Now
+                {copy.now}
               </span>
             </div>
 
             <div className="tl__axis">
-              <span className="tl__axis-label">Chapter</span>
+              <span className="tl__axis-label">{copy.chapter}</span>
               <div className="tl__track tl__track--axis">
                 {years.map((y, i) => (
                   <span
@@ -297,7 +317,7 @@ export default function ExperienceTimeline({
               <div className={cx('tl__kicker', sw)}>
                 <span className="tl__dot" />
                 {String(selectedIndex + 1).padStart(2, '0')} /{' '}
-                {KIND_LABEL[selected.type]}
+                {kindLabel[selected.type]}
               </div>
               <div className={cx('tl__detail-years', sw)} style={delay(40)}>
                 {selected.years}
@@ -306,7 +326,7 @@ export default function ExperienceTimeline({
                 <button
                   type="button"
                   className="tl__nav-btn"
-                  aria-label="Previous chapter"
+                  aria-label={copy.previousChapter}
                   onClick={() => step(-1)}
                 >
                   <ArrowIcon direction="left" />
@@ -314,7 +334,7 @@ export default function ExperienceTimeline({
                 <button
                   type="button"
                   className="tl__nav-btn"
-                  aria-label="Next chapter"
+                  aria-label={copy.nextChapter}
                   onClick={() => step(1)}
                 >
                   <ArrowIcon direction="right" />

@@ -1,9 +1,9 @@
-import React, { createContext, useState, useContext } from 'react'
+import { useState } from 'react'
+import { LanguageContext } from './languageContext'
 
-const LanguageContext = createContext()
-
+/** @param {{ children: import('react').ReactNode }} props */
 export function LanguageProvider({ children }) {
-  const [language, setLanguage] = useState('en')
+  const [language, setLanguage] = useState(/** @type {'en' | 'fr'} */ ('en'))
 
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === 'en' ? 'fr' : 'en'))
@@ -14,12 +14,4 @@ export function LanguageProvider({ children }) {
       {children}
     </LanguageContext.Provider>
   )
-}
-
-export function useLanguage() {
-  const context = useContext(LanguageContext)
-  if (!context) {
-    throw new Error('useLanguage must be used within LanguageProvider')
-  }
-  return context
 }

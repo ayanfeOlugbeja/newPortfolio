@@ -5,7 +5,7 @@ import Topbar from './components/Topbar'
 import About from './components/About'
 import SkillsShowcase from './components/SkillsShowcase'
 
-import Projects from './components/Projects'
+import Projects from './components/Projects.tsx'
 import TechnicalWriteups from './components/TechnicalWriteups'
 import ContactForm from './components/ContactForm'
 import Footer from './components/Footer'

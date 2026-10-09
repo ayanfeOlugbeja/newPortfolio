@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react'
-import { useLanguage } from '../context/LanguageContext'
+import { useLanguage } from '../context/useLanguage'
 import { translations } from '../data/translations'
 
 const FEEDS = [
@@ -70,7 +70,8 @@ const TechnicalWriteups = () => {
   const [activeTab, setActiveTab] = useState('all')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
+  const [pausedTab, setPausedTab] = useState(null)
+  const autoScrollEnabled = pausedTab !== activeTab
   const [canAutoplay, setCanAutoplay] = useState(false)
   const [inView, setInView] = useState(false)
   const sectionRef = useRef(null)
@@ -187,12 +188,12 @@ const TechnicalWriteups = () => {
   }, [])
 
   const handleManualScroll = (direction) => {
-    setAutoScrollEnabled(false)
+    setPausedTab(activeTab)
     scrollArticles(direction)
   }
 
   // Any touch, scroll or keyboard focus on the carousel means the visitor is in control
-  const stopAutoplay = () => setAutoScrollEnabled(false)
+  const stopAutoplay = () => setPausedTab(activeTab)
 
   useEffect(() => {
     const container = scrollContainerRef.current
@@ -230,23 +231,15 @@ const TechnicalWriteups = () => {
 
   // New tab = start from the first card (the scroll position used to carry over)
   useEffect(() => {
-    setAutoScrollEnabled(true)
     scrollContainerRef.current?.scrollTo({ left: 0, behavior: 'instant' })
   }, [activeTab])
-
-  const formatDate = (date) =>
-    new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    }).format(date)
 
   return (
     <section
       ref={sectionRef}
       id="blog"
       className="relative left-1/2 w-screen -translate-x-1/2 overflow-x-clip px-5 py-14 text-left text-[#101828] sm:px-6 md:px-8 md:py-20 lg:px-16"
-      aria-label="Technical writeups and blog articles section"
+      aria-label={copy.sectionLabel}
     >
       <div className="w-full">
         {/* <p className="mb-3 text-sm font-medium uppercase tracking-widest text-[#878787]">
@@ -263,7 +256,7 @@ const TechnicalWriteups = () => {
               type="button"
               onClick={() => handleManualScroll('prev')}
               className="flex h-11 w-11 items-center justify-center rounded-full border-0 bg-white p-0 text-[#101828] shadow-sm transition-colors duration-200 active:bg-[#e9eaef] sm:h-12 sm:w-12 md:hover:bg-[#e9eaef]"
-              aria-label="Scroll articles left"
+              aria-label={copy.previousArticles}
             >
               <ArrowLeft className="h-5 w-5" aria-hidden="true" />
             </button>
@@ -271,7 +264,7 @@ const TechnicalWriteups = () => {
               type="button"
               onClick={() => handleManualScroll('next')}
               className="flex h-11 w-11 items-center justify-center rounded-full border-0 bg-white p-0 text-[#101828] shadow-sm transition-colors duration-200 active:bg-[#e9eaef] sm:h-12 sm:w-12 md:hover:bg-[#e9eaef]"
-              aria-label="Scroll articles right"
+              aria-label={copy.nextArticles}
             >
               <ArrowRight className="h-5 w-5" aria-hidden="true" />
             </button>
@@ -281,7 +274,7 @@ const TechnicalWriteups = () => {
         <div
           className="mb-6 flex gap-1.5 overflow-x-auto rounded-full bg-[#fef1e7] p-1.5 md:mb-8 md:gap-3 md:p-2 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
           role="tablist"
-          aria-label="Filter technical writeups"
+          aria-label={copy.filterLabel}
         >
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id

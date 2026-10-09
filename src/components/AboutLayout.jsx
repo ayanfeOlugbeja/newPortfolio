@@ -6,18 +6,16 @@ import DareToDream from './DaretoDream'
 const MotionDiv = motion.div
 
 export default function AboutLayout({
-  mission,
-  title,
   description,
   details,
   cta,
   image,
 }) {
   return (
-    <section id="about" className="bg-white px-4 pb-20 pt-32 dark:bg-gray-900">
+    <section id="about" className="bg-white px-4 pb-20 pt-32">
       <div className="container mx-auto">
         {/* Mission Label */}
-        {/* <p className="mb-4 text-sm font-medium uppercase tracking-widest text-gray-600 dark:text-gray-400">
+        {/* <p className="mb-4 text-sm font-medium uppercase tracking-widest text-gray-600">
           {mission}
         </p> */}
 
@@ -30,12 +28,12 @@ export default function AboutLayout({
             viewport={{ once: true, amount: 0.25 }}
             transition={{ duration: 0.7, ease: 'easeOut' }}
           >
-            {/* <h2 className="mb-8 text-5xl font-bold leading-tight text-black dark:text-white lg:text-6xl">
+            {/* <h2 className="mb-8 text-5xl font-bold leading-tight text-black lg:text-6xl">
               {title}
             </h2> */}
             {/* Main Description */}
             {/* Lead statement: the one thing people should read first */}
-            <p className="mb-6 text-balance text-[1.375rem] font-medium leading-snug tracking-tight text-black dark:text-white md:text-2xl lg:text-3xl">
+            <p className="mb-6 text-balance text-[1.375rem] font-medium leading-snug tracking-tight text-black md:text-2xl lg:text-3xl">
               {description}
             </p>
 
@@ -44,7 +42,7 @@ export default function AboutLayout({
               {details.map((detail, index) => (
                 <p
                   key={index}
-                  className="text-[1.0625rem] leading-[1.65] text-gray-600 dark:text-gray-300 md:text-lg"
+                  className="text-[1.0625rem] leading-[1.65] text-gray-600 md:text-lg"
                 >
                   {detail}
                 </p>
@@ -55,7 +53,7 @@ export default function AboutLayout({
             {cta && (
               <a
                 href={cta.href}
-                className="inline-flex min-h-12 items-center text-lg font-medium text-black underline underline-offset-4 transition-opacity active:opacity-50 dark:text-white md:hover:opacity-70"
+                className="inline-flex min-h-12 items-center text-lg font-medium text-black underline underline-offset-4 transition-opacity active:opacity-50 md:hover:opacity-70"
               >
                 {cta.text} →
               </a>

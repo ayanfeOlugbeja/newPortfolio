@@ -1,4 +1,6 @@
 import { useEffect, useRef } from 'react'
+import { useLanguage } from '../context/useLanguage'
+import { translations } from '../data/translations'
 import dividerimage from '../assets/images/dividerimage.jpg'
 
 const BASE_SPEED = 60 // px per second when idle
@@ -22,6 +24,8 @@ function MarqueeRow({ text, color, direction, rowRef }) {
 }
 
 export default function DareToDream() {
+  const { language } = useLanguage()
+  const copy = translations[language].dareToDream
   const rowA = useRef(null)
   const rowB = useRef(null)
 
@@ -92,13 +96,13 @@ export default function DareToDream() {
         <section className="dtd-stage">
           <div className="dtd-text">
             <MarqueeRow
-              text="Dare to dream."
+              text={copy.dare}
               color="#0a0a0a"
               direction="left"
               rowRef={rowA}
             />
             <MarqueeRow
-              text="Dream big."
+              text={copy.dream}
               color="#f7812c"
               direction="right"
               rowRef={rowB}
@@ -106,7 +110,7 @@ export default function DareToDream() {
           </div>
 
           <figure className="dtd-frame">
-            <img src={dividerimage} alt="A dreamer looking ahead" />
+            <img src={dividerimage} alt={copy.imageAlt} />
           </figure>
         </section>
       </main>

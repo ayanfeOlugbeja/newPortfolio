@@ -1,9 +1,10 @@
 'use client'
 
-import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Circle } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
+
+const MotionDiv = motion.div
 
 function ElegantShape({
   className,
@@ -14,7 +15,7 @@ function ElegantShape({
   gradient = 'from-white/[0.08]',
 }) {
   return (
-    <motion.div
+    <MotionDiv
       initial={{
         opacity: 0,
         y: -150,
@@ -33,7 +34,7 @@ function ElegantShape({
       }}
       className={cn('absolute', className)}
     >
-      <motion.div
+      <MotionDiv
         animate={{
           y: [0, 15, 0],
         }}
@@ -59,8 +60,8 @@ function ElegantShape({
             'after:bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.2),transparent_70%)]'
           )}
         />
-      </motion.div>
-    </motion.div>
+      </MotionDiv>
+    </MotionDiv>
   )
 }
 

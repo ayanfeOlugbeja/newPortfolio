@@ -1,5 +1,5 @@
 import React from 'react'
-import { useLanguage } from '../context/LanguageContext'
+import { useLanguage } from '../context/useLanguage'
 import { translations } from '../data/translations'
 import AboutLayout from './AboutLayout'
 import heroImage from '../assets/images/Aiyedogbon Abraham.png'
@@ -12,10 +12,10 @@ export default function About() {
     mission: t.about.mission || 'About Me',
     title: t.about.title,
     description: t.about.bio1,
-    details: [t.about.bio2, t.about.bio3, t.about.bio4],
+    details: [t.about.bio2, t.about.bio3],
     cta: {
       text: t.about.learnMore || 'Learn more about my journey',
-      href: '#projects',
+      href: '#journey',
     },
     image: {
       src: heroImage,
