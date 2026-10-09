@@ -158,7 +158,7 @@ function StackCard({ project, index, offset, reduceMotion }: StackCardProps) {
           />
         </div>
 
-        <h3 className="break-words text-[clamp(1.15rem,10cqw,3rem)] font-bold leading-none tracking-tighter [text-wrap:balance]">
+        <h3 className="break-words text-[clamp(1.15rem,10cqw,3rem)] font-bold font-labilGrotesk leading-none tracking-tighter [text-wrap:balance]">
           {project.title}
         </h3>
       </div>
@@ -213,7 +213,7 @@ export default function Projects() {
   return (
     <section id="projects" className="bg-white text-black">
       <div className="mx-auto flex max-w-[1840px] flex-row items-center justify-between gap-4 px-5 pb-8 pt-14 sm:items-end sm:px-6 md:px-10 md:pb-10 md:pt-24">
-        <h2 className="whitespace-nowrap text-4xl font-bold tracking-tighter sm:text-6xl md:text-7xl">
+        <h2 className="whitespace-nowrap text-4xl font-bold font-labilGrotesk tracking-tighter sm:text-6xl md:text-7xl">
           {t.projects.title}
         </h2>
 
@@ -261,7 +261,7 @@ export default function Projects() {
                 {project.context}
               </p>
 
-              <h3 className="mt-3 text-[clamp(2rem,9vw,2.6rem)] font-bold leading-none tracking-tighter md:text-[clamp(2.4rem,5vw,5rem)] md:leading-[0.98]">
+              <h3 className="mt-3 text-[clamp(2rem,9vw,2.6rem)] font-bold font-labilGrotesk leading-none tracking-tighter md:text-[clamp(2.4rem,5vw,5rem)] md:leading-[0.98]">
                 {project.title}
               </h3>
 

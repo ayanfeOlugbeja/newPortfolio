@@ -185,7 +185,7 @@ export default function ContactForm() {
       {/* Header Section */}
       <div className="px-5 pt-14 pb-10 sm:px-6 md:px-8 md:pt-20 md:pb-12 lg:px-16">
         <div className="max-w-6xl mx-auto">
-          <h2 className="mb-4 break-words text-4xl font-black italic tracking-tight text-black sm:text-5xl md:mb-6 md:text-7xl lg:text-8xl">
+          <h2 className="mb-4 break-words text-4xl font-black font-labilGrotesk italic tracking-tight text-black sm:text-5xl md:mb-6 md:text-7xl lg:text-8xl">
             {t.contact.title}
           </h2>
           <p className="text-lg md:text-xl text-black max-w-2xl">

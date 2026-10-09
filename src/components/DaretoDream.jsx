@@ -126,7 +126,7 @@ const css = `
     min-width: 100vw;
     transform: translateX(-50%);
     background: #ffffff;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: var(--font-labil-grotesk);
   }
 
   .dtd-stage {
@@ -162,6 +162,7 @@ const css = `
   .dtd-word {
     font-size: clamp(5rem, 17vw, 17rem);
     font-weight: 900;
+    font-family: var(--font-lemon-milk);
     letter-spacing: -0.05em;
   }
 

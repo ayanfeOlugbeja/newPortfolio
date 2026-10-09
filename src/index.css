@@ -3,14 +3,56 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Labil Grotesk';
+  src: url('/fonts/labil-grotesk-variable.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lemon Milk';
+  src: url('/fonts/lemon-milk-light.otf') format('opentype');
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lemon Milk';
+  src: url('/fonts/lemon-milk-regular.otf') format('opentype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lemon Milk';
+  src: url('/fonts/lemon-milk-medium.otf') format('opentype');
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lemon Milk';
+  src: url('/fonts/lemon-milk-bold.otf') format('opentype');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
 /* Project custom styles (kept after Tailwind so you can override) */
 html {
   scrollbar-gutter: stable;
 }
 
 :root {
-  font-family:
-    'Poppins', 'SF Pro Display', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-labil-grotesk: 'Labil Grotesk', sans-serif;
+  --font-lemon-milk: 'Lemon Milk', sans-serif;
+
+  font-family: var(--font-labil-grotesk);
   line-height: 1.5;
   font-weight: 400;
 
@@ -22,6 +64,14 @@ html {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.font-labilGrotesk {
+  font-family: var(--font-labil-grotesk);
+}
+
+.font-lemonMilk {
+  font-family: var(--font-lemon-milk);
 }
 
 a {

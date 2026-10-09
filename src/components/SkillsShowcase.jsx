@@ -36,7 +36,7 @@ const SkillsShowcase = () => {
         <div className="contents md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-between md:py-10">
           <h2
             id="skills-title"
-            className="order-1 pt-10 pb-2 text-2xl font-bold tracking-tight md:order-none md:pb-0 md:pt-[22vh]"
+            className="order-1 pt-10 pb-2 text-2xl font-bold font-labilGrotesk tracking-tight md:order-none md:pb-0 md:pt-[22vh]"
           >
             {t.skills.title}
           </h2>
@@ -76,7 +76,7 @@ const SkillsShowcase = () => {
 
               <div className="min-w-0">
                 {/* Big statement */}
-                <h3 className="break-words text-[1.75rem] font-bold leading-[1.1] tracking-tighter [text-wrap:balance] sm:text-3xl md:text-[clamp(1.9rem,3.7vw,3.6rem)] md:leading-[1.05]">
+                <h3 className="break-words text-[1.75rem] font-bold font-labilGrotesk leading-[1.1] tracking-tighter [text-wrap:balance] sm:text-3xl md:text-[clamp(1.9rem,3.7vw,3.6rem)] md:leading-[1.05]">
                   {data.description}
                 </h3>
 

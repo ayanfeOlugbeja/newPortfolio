@@ -174,7 +174,7 @@ export default function ExperienceTimeline({
       <div className="tl__inner">
         <header className="tl__header">
           <div className="tl__heading">
-            <h2 id="tl-title" className="tl__title tl__rise">
+            <h2 id="tl-title" className="tl__title tl__rise font-labilGrotesk">
               {title ?? copy.title}
             </h2>
             <p
@@ -348,7 +348,7 @@ export default function ExperienceTimeline({
                   {selected.role}
                 </div>
               )}
-              <h3 className={cx('tl__detail-title', sw)} style={delay(100)}>
+              <h3 className={cx('tl__detail-title', 'font-labilGrotesk', sw)} style={delay(100)}>
                 {selected.title}
               </h3>
               <p className={cx('tl__desc', sw)} style={delay(170)}>

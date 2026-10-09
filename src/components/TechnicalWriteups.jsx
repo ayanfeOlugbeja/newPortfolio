@@ -247,7 +247,7 @@ const TechnicalWriteups = () => {
         </p> */}
         {/* Title and arrows share one row at every width */}
         <div className="mb-6 flex items-end justify-between gap-4 md:mb-8 md:gap-6">
-          <h2 className="min-w-0 text-4xl font-bold leading-tight text-[#101828] md:text-5xl">
+          <h2 className="min-w-0 text-4xl font-bold font-labilGrotesk leading-tight text-[#101828] md:text-5xl">
             {copy.latestNews || 'Technical Writeups'}
           </h2>
 
