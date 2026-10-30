@@ -5,7 +5,7 @@
   --tl-muted: #4a4a46;
   --tl-faint: #5f5f5a;
   --tl-line: rgba(17, 17, 17, 0.09);
-  --tl-bg: #fafaf8;
+  --tl-bg: #ffffff;
   --tl-card: #ffffff;
   --tl-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --tl-label-w: clamp(96px, 16vw, 168px);
